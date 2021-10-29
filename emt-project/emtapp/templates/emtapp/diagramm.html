@@ -1,8 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-  	<meta charset="UTF-8">
-  	<title>Diagramm</title>
+<!-- Parent Template erweitern -->
+{% extends 'emtapp/base.html' %}
+
+<!-- Teil wird in content eingefügt -->
+{% block content %}
+
   	<!-- <link rel="stylesheet" href="template.css" />
   	<script src="template.js"></script> -->
 
@@ -80,11 +81,10 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-2">
-          <p><h2>Das erste Diagramm mit Chart.js</h2> <br>--> Simple yet flexible JavaScript charting for designers & developers</br>
-            <b>Es gibt noch viel zu tun....</b>
+          <h3> Zähler: {{ values.0 }}</h3>
         </div>
-        <div class="col-sm-8">
-          <canvas id="myChart" width="400" height="300" ></canvas>
+        <div class="col-sm-5">
+          <canvas id="myChart" width="200" height="200" ></canvas>
         </div>
       </div>
       </div>
@@ -94,6 +94,7 @@
 
     <!-- <div>
       <canvas id="myChart" width="200" height="100" ></canvas>
-    </div> -->
-  </body>
-</html>
+    </div>
+  </body> -->
+
+{% endblock %}

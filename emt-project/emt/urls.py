@@ -14,12 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
-#from emt import views #views.py aus der Datei zaehler importieren
 from emtapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('diagramm/', views.diagramm, name="diagramm"),
+    path('', include('emtapp.urls')),
 ]
