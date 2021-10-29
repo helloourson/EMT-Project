@@ -1,0 +1,16 @@
+<!-- Parent Template erweitern -->
+{% extends 'emtapp/base.html' %}
+
+  <!-- Teil wird in content eingefügt -->
+{% block content %}
+      Zähler: {{ values.0 }}
+      <ul>
+        {% for value in values %}
+          <li>
+          {{ value.readout_date}}
+          - {{ value.energy_1 }} [kW]
+          - {{ value.comment }}
+          </li>
+        {% endfor %}
+      </ul>
+{% endblock %}
