@@ -1,0 +1,26 @@
+<!-- Parent Template erweitern -->
+{% extends 'emtapp/base.html' %}
+
+<!-- Title einfügen -->
+{% block title %} add_readout.html Add Readout {% endblock title %}
+
+{% block content %}
+<h1>Ablesung erfassen und in Datenbank schreiben</h1>
+
+{% if submitted %}
+  <p class="success">
+    Die Ablesung ist in der DB erfolreich erfasst worden.
+  </p>
+{% else %}
+  <form action="" method="post" novalidate>
+  <table>
+    {{ form.as_table }}
+    <tr>
+      <td>&nbsp;</td>
+      <td><input type="submit" value="Submit"></td>
+    </tr>
+  </table>
+  {% csrf_token %}
+  </form>
+{% endif %}
+{% endblock content %}

@@ -1,0 +1,20 @@
+<!-- Parent Template erweitern -->
+{% extends 'emtapp/base.html' %}
+
+<!-- Title einfügen -->
+{% block title %}  counter.html {{ values.0 }} {% endblock title %}
+
+  <!-- Teil wird in content eingefügt -->
+{% block content %}
+<h2>Registrierte Zähler</h2>
+  <ul>
+    {% for value in values %}
+      <li>ID: {{ value.id }}</li>
+      <li>Gebäude-ID: {{ value.building }}</li>
+      <li>Name: {{ value.name}}</li>
+      <li>Zählertyp: {{ value.counter_type }}</li>
+      <li>Überlauf: {{ value.counter_overflow }</li>
+      <li>++++++++++++++++++++++++++++++++++++++++++</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

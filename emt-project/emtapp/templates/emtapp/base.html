@@ -5,10 +5,14 @@
   <head>
       <!-- Required meta tags -->
       <meta charset="utf-8">
-      <title>EMT</title>
+      <title>
+        {% block title %}
+          {{ base_titel | default:"Untitled Page" }}
+        {% endblock title %}
+      </title>
   </head>
   <body>
-      <h1> Hier ist die  Navbar </h1>
+      <h1> Hier ist die  Navbar von base.html</h1>
       <p>*********************</p>
 
           {% block content %}
@@ -18,7 +22,7 @@
 
   <footer>
     <p>***********************</p>
-    <p>Fusszeile Kontaktadresse: EBL</p>
+    <h1>Hier ist die Fusszeile von base.html</h1>
 
   </footer>
 

@@ -1,6 +1,9 @@
 <!-- Parent Template erweitern -->
 {% extends 'emtapp/base.html' %}
 
+<!-- Title einfügen -->
+{% block title %} diagramm.html {{ values.0 }} Diagramm {% endblock title %}
+
 <!-- Teil wird in content eingefügt -->
 {% block content %}
 
@@ -29,11 +32,13 @@
         data: {
             // labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
             //Werte Ablesedatum aus models Zaehler Datenbank ausgelesen
-            labels: [{% for item in values %} "{{ item.readout_date | date:"d/m/Y"  }}", {% endfor %}],
+            // labels: [{% for value in values %} "{{ value.readout_date | date:"d m Y"  }}", {% endfor %}],
+            labels: [{% for item in values %} "{{ item.readout_date | date:"d m Y"  }}", {% endfor %}],
             datasets: [{
-                label: 'Ablesungen',
+                label: '{{ values.0 }}', //'Ablesungen',
                 // data: [12, 19, 3, 5, 2, 3],
                 //Ablesewerte aus DB ausgelesen
+                // data: [{% for value in values %} "{{ value.energy_1 }}", {% endfor %}],
                 data: [{% for item in values %} "{{ item.energy_1 }}", {% endfor %}],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -80,14 +85,14 @@
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-sm-2">
+        <!-- <div class="col-sm-2">
           <h3> Zähler: {{ values.0 }}</h3>
-        </div>
-        <div class="col-sm-5">
+        </div> -->
+        <div class="col-sm-8">
           <canvas id="myChart" width="200" height="200" ></canvas>
         </div>
       </div>
-      </div>
+    </div>
 
 
 

@@ -63,25 +63,25 @@ class Counter(models.Model):
 # Django model Ablesung erstellen
 class Readout(models.Model):
     #Verknüpfung mit User herstellen, damit nur dieser einen Ablesewert eingeben kann. --> UdemyKurs Todowoo Projekt?
-    #Ein Zähler hat mehrere Ablesungen, One-To-Many relationship
+    #Ein Zähler  hat mehrere Ablesungen, One-To-Many relationship
     counter = models.ForeignKey(Counter, on_delete= models.CASCADE)
     readout_date = models.DateField('Ablesedatum') #Ablesedatum
-    register_1 = models.IntegerField('Zählerstand Register Nr.1 [m3]') #Eingabewert beim Form einschränken
-    register_2 = models.IntegerField('Zählerstand Register Nr.2 [m3]')
+    register_1 = models.IntegerField('Zählerstand Register Nr.1') #Eingabewert beim Form einschränken
+    register_2 = models.IntegerField('Zählerstand Register Nr.2', default=0)
     comment = models.TextField('Kommentar [-]', max_length= 200)
     energy_1 = models.IntegerField('Energieverbrauch Register Nr.1 [kWh]')
-    energy_2 = models.IntegerField('Energieverbrauch Register Nr.2 [kWh]')
+    energy_2 = models.IntegerField('Energieverbrauch Register Nr.2 [kWh]', default=0)
 
     def __str__(self):
         return f'{self.counter}' #Zahl in ein Zeichen String umwandeln, ansonsten ergibt sich ein Fehler
 
-    #Funktion um Zählerstand in Energie, vor Save, umzurechnen
-    def save(self, *args, **kwargs):
-        energy_1 = models.IntegerField('Energieverbrauch Register Nr.1 [kWh]')
-        energy_2 = models.IntegerField('Energieverbrauch Register Nr.2 [kWh]')
-        #Zählerwert in Energie umrechnen
-        #Der Energieträger muss berücksichtigt werden für Umrechnung Stom 1:1, Heizöl 10.5 kWh/dm3
-        #Zählerstand Heizöl Pneumatisch dm3/%, Mechanisch dm3/cm, Digital dm3
-        self.energy_1 = self.register_1 * 11.452
-        self.energy_2 = self.register_2 * 11.452
-        super(Readout, self).save(*args, **kwargs)
+    # #Funktion um Zählerstand in Energie, vor Save, umzurechnen
+    # def save(self, *args, **kwargs):
+    #     energy_1 = models.IntegerField('Energieverbrauch Register Nr.1 [kWh]')
+    #     energy_2 = models.IntegerField('Energieverbrauch Register Nr.2 [kWh]')
+    #     #Zählerwert in Energie umrechnen
+    #     #Der Energieträger muss berücksichtigt werden für Umrechnung Stom 1:1, Heizöl 10.5 kWh/dm3
+    #     #Zählerstand Heizöl Pneumatisch dm3/%, Mechanisch dm3/cm, Digital dm3
+    #     self.energy_1 = self.register_1 * 11.452
+    #     self.energy_2 = self.register_2 * 11.452
+    #     super(Readout, self).save(*args, **kwargs)

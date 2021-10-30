@@ -1,0 +1,24 @@
+<!-- Parent Template erweitern -->
+{% extends 'emtapp/base.html' %}
+
+<!-- Title einfügen -->
+{% block title %} building.html {{ values.0 }} {% endblock title %}
+
+  <!-- Teil wird in content eingefügt -->
+{% block content %}
+  <ul>
+    {% for value in values %}
+      <li>ID: {{ value.id }}</li>
+      <li>Strasse: {{ value.street_number}}</li>
+      <li>Ort: {{ value.city }}</li>
+      <li>Haustyp: {{ value.building_type }}</li>
+      <li>EBF: {{ value.ebf }}</li>
+      <li>Bewohner: {{ value.tenant }}</li>
+      <li>Heizungstyp: {{ value.heating_type }}</li>
+      <li>Wärmeverteilung: {{ value.distribution_type }}/li>
+      <li>BWW: {{ values.hotwater_type }}</li>
+      <li>Kommentar: {{ value.comment }}</li>
+      <li>++++++++++++++++++++++++++++++++++++++++++</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
