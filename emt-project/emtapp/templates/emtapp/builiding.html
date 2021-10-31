@@ -2,14 +2,14 @@
 {% extends 'emtapp/base.html' %}
 
 <!-- Title einfügen -->
-{% block title %} add_readout.html Add Readout {% endblock title %}
+{% block title %} building.html Add Building {% endblock title %}
 
 {% block content %}
-<h1>Ablesung erfassen und in Datenbank schreiben</h1>
+<h1>Gebäude erfassen und in Datenbank schreiben</h1>
 
 {% if submitted %}
   <p class="success">
-    Die Ablesung ist in der DB erfolreich erfasst worden.
+    Das Gebäude ist in der DB erfolreich erfasst worden.
   </p>
 {% else %}
   <form action="" method="post" novalidate>

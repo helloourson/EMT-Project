@@ -109,10 +109,11 @@ LANGUAGE_CODE = 'de-ch'
 
 #TIME_ZONE = 'UTC'
 TIME_ZONE = 'Europe/Zurich'
+#USE_THOUSAND_SEPARATOR = True #Tausender-Trennzeichen soll angewant werden
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = True #Django will display numbers and dates using the format of the current locale.
 
 USE_TZ = True
 

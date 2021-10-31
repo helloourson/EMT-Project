@@ -16,7 +16,7 @@ class Building(models.Model):
     tenant = models.IntegerField('Anzahl Bewohner')
     HEATING_TYPE_CHOICES = [
         ('OHK', 'Ölheizkessel'),
-        ('EHK', 'Erdgasheikessel'),
+        ('EHK', 'Erdgasheizkessel'),
         ('ESH', 'Elektro-Speicherheizung'),
         ('EZH', 'Elektro-Zentralheizung'),
         ('WPL', 'Wärmepumpe Luft-Wasser'),
@@ -66,8 +66,10 @@ class Readout(models.Model):
     #Ein Zähler  hat mehrere Ablesungen, One-To-Many relationship
     counter = models.ForeignKey(Counter, on_delete= models.CASCADE)
     readout_date = models.DateField('Ablesedatum') #Ablesedatum
-    register_1 = models.IntegerField('Zählerstand Register Nr.1') #Eingabewert beim Form einschränken
-    register_2 = models.IntegerField('Zählerstand Register Nr.2', default=0)
+    # register_1 = models.DecimalField('Zählerstand Register Nr.1', max_digits = 7, decimal_places=0) #Eingabewert beim Form einschränken
+    # register_2 = models.DecimalField('Zählerstand Register Nr.2', max_digits = 7, decimal_places=0, default=0)
+    register_1 = models.IntegerField('Zählerstand Register Nr.1', help_text= 'Werte ohne Komma eingeben') #Eingabewert beim Form einschränken
+    register_2 = models.IntegerField('Zählerstand Register Nr.2 (Nur wenn vorhanden)', default=0, help_text= 'Werte ohne Komma eingeben')
     comment = models.TextField('Kommentar [-]', max_length= 200)
     energy_1 = models.IntegerField('Energieverbrauch Register Nr.1 [kWh]')
     energy_2 = models.IntegerField('Energieverbrauch Register Nr.2 [kWh]', default=0)

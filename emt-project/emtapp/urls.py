@@ -1,5 +1,4 @@
 #urls.py erstellen in Emtapp
-
 from django.urls import path
 from .import views
 
@@ -9,5 +8,7 @@ urlpatterns = [
     path('building/', views.building, name='building'),
     path('counter/', views.counter, name='counter'),
     path('diagramm/', views.diagramm, name='diagramm'),
-    path('add_readout/', views.add_readout, name='add_readout'),
+    path('building/new', views.building_new, name='building_new'),
+    path('readout/new', views.readout_new, name='readout_new'),
+
 ]

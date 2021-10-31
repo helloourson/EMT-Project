@@ -2,18 +2,27 @@
 {% extends 'emtapp/base.html' %}
 
 <!-- Title einfügen -->
-{% block title %} readout.html {{ values.0 }} Liste {% endblock title %}
+{% block title %} readout.html Add Readout {% endblock title %}
 
-  <!-- Teil wird in content eingefügt -->
 {% block content %}
-      Zähler: {{ values.0 }}
-      <ul>
-        {% for value in values %}
-          <li>
-          {{ value.readout_date | date:"d m Y"}}
-          - {{ value.energy_1 }} [kW]
-          - {{ value.comment }}
-          </li>
-        {% endfor %}
-      </ul>
-{% endblock %}
+<h1>Ablesung erfassen und in Datenbank schreiben</h1>
+
+{% if submitted %}
+  <p class="success">
+    Die Ablesung ist in der DB erfolreich erfasst worden.
+  </p>
+
+
+{% else %}
+  <form action="" method="post" novalidate>
+  <table>
+    {{ form.as_table }}
+    <tr>
+      <td>&nbsp;</td>
+      <td><input type="submit" value="Submit"></td>
+    </tr>
+  </table>
+  {% csrf_token %}
+  </form>
+{% endif %}
+{% endblock content %}
