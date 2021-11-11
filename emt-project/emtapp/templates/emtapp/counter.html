@@ -2,19 +2,31 @@
 {% extends 'emtapp/base.html' %}
 
 <!-- Title einfügen -->
-{% block title %}  counter.html {{ values.0 }} {% endblock title %}
+{% block title %}  counter.html Add counter {{ values.0 }} {% endblock title %}
 
   <!-- Teil wird in content eingefügt -->
 {% block content %}
-<h2>Registrierte Zähler</h2>
-  <ul>
-    {% for value in values %}
-      <li>ID: {{ value.id }}</li>
-      <li>Gebäude-ID: {{ value.building }}</li>
-      <li>Name: {{ value.name}}</li>
-      <li>Zählertyp: {{ value.counter_type }}</li>
-      <li>Überlauf: {{ value.counter_overflow }}</li>
-      <li>++++++++++++++++++++++++++++++++++++++++++</li>
-    {% endfor %}
-  </ul>
+<h2>Neuer Zähler erfassen und in Datenbank schreiben</h2>
+
+{% if submitted %}
+    <p class="success">
+      Das Gebäude ist in der DB erfolreich erfasst worden.
+    </p>
+  {% else %}
+    <form action="" method="POST" novalidate>
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td>&nbsp;</td>
+        <td><button type="submit">Speichern</button></td>
+      </tr>
+    </table>
+    {% csrf_token %}
+    </form>
+
+{% endif %}
+
+
+
+
 {% endblock %}

@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-# Django model Geäude erstellen
+# Django model Gebäude erstellen
 class Building(models.Model):
     street_number = models.CharField('Strasse', max_length=100)
     city = models.CharField('Ort', max_length=100)
@@ -36,15 +36,15 @@ class Building(models.Model):
         ('SK', 'Solarkollektoren'),
         ]
     hotwater_type = models.CharField('Wassererwärmung', max_length= 50, choices= HOTWATER_TYPE_CHOICES, default= 'VH')
-    comment = models.TextField('Kommentar [-]', max_length= 200, blank= True)
+    comment = models.TextField('Kommentar [-]', max_length= 200, default='-')
 
     def __str__(self):
         return self.street_number
 
 # Django model Zähler erstellen
 class Counter(models.Model):
-    building = models.ForeignKey(Building, on_delete= models.CASCADE) #Ein Zähler kann nur einem Haus verbaut sein, On-to-Many relationship
     name = models.CharField('Bezeichung', max_length= 100) #Für Bezeichung Zähler
+    building = models.ForeignKey(Building, on_delete= models.CASCADE) #Ein Zähler kann nur einem Haus verbaut sein, On-to-Many relationship
     #Auswahl der möglichen Zählertypen
     COUNTER_TYPE_CHOICES = [
         ('HLM', 'Heizölzähler Mechanisch'),
@@ -54,7 +54,8 @@ class Counter(models.Model):
         ('SET', 'Stromzähler Einfachtarif'),
         ('SDT', 'Stromzähler Doppeltarif'),
         ]
-    counter_type = models.CharField('Zählertyp', max_length= 50, choices= COUNTER_TYPE_CHOICES, default= 'EDG')
+    counter_type = models.CharField('Typ', max_length= 50, choices= COUNTER_TYPE_CHOICES, default= 'EDG')
+    conversion = models.FloatField('Wandlerfaktor', help_text= 'Heizöl: X[Lit/cm], X[Lit/%], 1[Lit], Erdgas 11.452 [kWh/m3], Strom 1[kWhel]', default= 1)
     counter_overflow = models.BooleanField('Überlauf')
 
     def __str__(self):
@@ -70,7 +71,7 @@ class Readout(models.Model):
     # register_2 = models.DecimalField('Zählerstand Register Nr.2', max_digits = 7, decimal_places=0, default=0)
     register_1 = models.IntegerField('Zählerstand Register Nr.1', help_text= 'Werte ohne Komma eingeben') #Eingabewert beim Form einschränken
     register_2 = models.IntegerField('Zählerstand Register Nr.2 (Nur wenn vorhanden)', default=0, help_text= 'Werte ohne Komma eingeben')
-    comment = models.TextField('Kommentar [-]', max_length= 200)
+    comment = models.TextField('Kommentar [-]', max_length= 200, default='-')
     energy_1 = models.IntegerField('Energieverbrauch Register Nr.1 [kWh]')
     energy_2 = models.IntegerField('Energieverbrauch Register Nr.2 [kWh]', default=0)
 

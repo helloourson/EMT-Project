@@ -2,7 +2,7 @@
 {% extends 'emtapp/base.html' %}
 
 <!-- Title einfügen -->
-{% block title %} diagramm.html {{ values.0 }} Diagramm {% endblock title %}
+{% block title %} diagramm.html {{ value_list.0 }} Diagramm {% endblock title %}
 
 <!-- Teil wird in content eingefügt -->
 {% block content %}
@@ -33,13 +33,13 @@
             // labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
             //Werte Ablesedatum aus models Zaehler Datenbank ausgelesen
             // labels: [{% for value in values %} "{{ value.readout_date | date:"d m Y"  }}", {% endfor %}],
-            labels: [{% for item in values %} "{{ item.readout_date | date:"d m Y"  }}", {% endfor %}],
+            labels: [{% for item in value_list %} "{{ item.readout_date | date:"d m Y"  }}", {% endfor %}],
             datasets: [{
-                label: '{{ values.0 }}', //'Ablesungen',
+                label: '{{ value_list.0 }}', //'Ablesungen',
                 // data: [12, 19, 3, 5, 2, 3],
                 //Ablesewerte aus DB ausgelesen
                 // data: [{% for value in values %} "{{ value.energy_1 }}", {% endfor %}],
-                data: [{% for item in values %} "{{ item.energy_1 }}", {% endfor %}],
+                data: [{% for item in value_list %} "{{ item.energy_1 }}", {% endfor %}],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                 ],
@@ -83,16 +83,27 @@
   </script>
 
   <body>
+    <!-- Button um zu Ableseliste zu wechseln -->
+  <form class="" action="{% url 'readout' value_list.0.counter_id %}" method="POST">
+      {% csrf_token %}
+      <button type="submit" name="button">Energieverbrauch als Liste anzeigen</button>
+  </form>
+
+
+
     <div class="container">
       <div class="row">
-        <div class="col-sm-2">
+        <div class="col-sm">
           <ul>
-            <li><a href="#">Zähler1</a></li>
-            <li><a href="#">Zähler2</a></li>
+            <p>Gebäude: {{ building.street_number }} EBF: {{ building.ebf }} [m2]</p>
+            <p>Energieverbrauch {{ consumption }} [kWh] in {{ dauer }} Tagen</p>
+            <p>Spezifiescher Energieverbrauch {{ specific_consumption | floatformat:0 }} [kWh/m2]</p>
+            <p>Prognose Jahres-Energieverbrauch {{ consumption_heating_period | floatformat:0 }} [kWh] (8Monate)</p>
+            <p>Zeitdauer in Tagen:{{ dauer }}</p>
           </ul>
           <!-- <h3> Zähler: {{ values.0 }}</h3> -->
         </div>
-        <div class="col-sm-8">
+        <div class="col-sm">
           <canvas id="myChart" width="200" height="200" ></canvas>
         </div>
       </div>

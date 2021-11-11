@@ -5,19 +5,19 @@
 {% block title %} building.html Add Building {% endblock title %}
 
 {% block content %}
-<h1>Gebäude erfassen und in Datenbank schreiben</h1>
+<h2>Neues Gebäude erfassen und in Datenbank schreiben</h2>
 
 {% if submitted %}
   <p class="success">
     Das Gebäude ist in der DB erfolreich erfasst worden.
   </p>
 {% else %}
-  <form action="" method="post" novalidate>
+  <form action="" method="POST" novalidate>
   <table>
     {{ form.as_table }}
     <tr>
       <td>&nbsp;</td>
-      <td><input type="submit" value="Submit"></td>
+      <td><button type="submit">Speichern</button></td>
     </tr>
   </table>
   {% csrf_token %}

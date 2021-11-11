@@ -14,11 +14,18 @@
   <body>
       <h1> Hier ist die  Navbar von base.html</h1>
       <a href="{% url 'home' %}">Home</a>
-      <a href="{% url 'diagramm' %}">Diagramm</a>
+      <a href="{% url 'building' %}">Gebäude</a>
+      <a href="{% url 'building_new' %}">Neues Gebäude</a>
+      <a href="{% url 'counter' %}">Zähler</a>
+      <a href="{% url 'counter_new' %}">Neuer Zähler</a>
+      <a href="{% url 'readout_new' %}">Neue Ablesung</a>
       <p>*********************</p>
-
           {% block content %}
-              <!-- Hier wird der Teil von content eingefügt -->
+
+
+
+
+
           {% endblock %}
   </body>
 

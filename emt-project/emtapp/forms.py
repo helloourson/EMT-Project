@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Readout, Building
+from .models import Readout, Building, Counter
 
 #Formular um Energiewerte zu erfassen, umrechnen und in DB schreiben
 class ReadoutForm(ModelForm):
@@ -13,4 +13,10 @@ class ReadoutForm(ModelForm):
 class BuildingForm(ModelForm):
     class Meta:
         model = Building
+        fields = '__all__'
+
+#Formular um Gebäude zuerfassen
+class CounterForm(ModelForm):
+    class Meta:
+        model = Counter
         fields = '__all__'

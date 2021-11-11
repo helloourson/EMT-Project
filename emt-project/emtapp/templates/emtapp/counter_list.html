@@ -1,0 +1,30 @@
+<!-- Parent Template erweitern -->
+{% extends 'emtapp/base.html' %}
+
+<!-- Title einfügen -->
+{% block title %}  counter_list.html {% endblock title %}
+
+  <!-- Teil wird in content eingefügt -->
+{% block content %}
+<h2>Registrierte Zähler</h2>
+
+  <ul>
+    {% for counter in counter_list %}
+      <li>Zähler-ID: {{ counter.id }}</li>
+      <li>Standort: {{ counter.building }}</li>
+      <li>Name:<b>{% filter striptags|upper %} {{ counter.name }}   {% endfilter %} </b> </li>
+      <li>Zählertyp: {{ counter.counter_type }}</li>
+      <li>Wandlerfaktor: {{ counter.conversion }}</li>
+      <li>Überlauf: {{ counter.counter_overflow }}</li>
+      <form class="" action="{% url 'readout' counter.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" name="button">Energieverbrauch als Liste</button>
+      </form>
+      <form class="" action="{% url 'diagramm' counter.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" name="button">Energieverbrauch als Diagramm</button>
+      </form>
+      <li>++++++++++++++++++++++++++++++++++++++++++</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
