@@ -56,19 +56,11 @@ def readout_new(request):
                 'SDT': 1
                 }
             z = newreadout.counter_id #Variable um Zähler ID auszulesen
-<<<<<<< Updated upstream
-            t = Counter.objects.get(id=z).counter_type #Richtiger Zählertyp auslesen
-            newreadout.energy_1 = newreadout.register_1 * hs[t] #Zählerwert in Energie umrechnen
-            newreadout.energy_2 = newreadout.register_2 * hs[t] #Zählerwert in Energie umrechnen
-            #cd = form.cleaned_data #Daten in Variabel cd schreiben um beim testen auslesen können
-            #assert False #ermögliche in Django-Error-Seite page Varibel cd zu betrachten
-=======
             logger.info(f"Z: {z}")
             u = Counter.objects.get(id=z).conversion #Wandlerfaktor des Zählers auslesen
             logger.info(f"U: {u}")
             newreadout.energy_1 = newreadout.register_1 * u #Zählerwert in Energie umrechnen
             newreadout.energy_2 = newreadout.register_2 * u #Zählerwert in Energie umrechnen
->>>>>>> Stashed changes
             form.save()
             return HttpResponseRedirect('/readout/new?submitted=True') #Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
