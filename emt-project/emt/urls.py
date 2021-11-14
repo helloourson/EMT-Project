@@ -20,5 +20,6 @@ from emtapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Um die URL's von App-emtapp nutzen zu können
     path('', include('emtapp.urls')),
 ]

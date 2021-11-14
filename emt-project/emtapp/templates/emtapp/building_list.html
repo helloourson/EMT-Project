@@ -2,7 +2,7 @@
 {% extends 'emtapp/base.html' %}
 
 <!-- Title einfügen -->
-{% block title %} building.html {{ values.0 }} {% endblock title %}
+{% block title %} building_list.html {% endblock title %}
 
   <!-- Teil wird in content eingefügt -->
 {% block content %}
@@ -13,11 +13,11 @@
       <li>Strasse: {{ value.street_number}}</li>
       <li>Ort: {{ value.city }}</li>
       <li>Haustyp: {{ value.building_type }}</li>
-      <li>EBF: {{ value.ebf }}</li>
-      <li>Bewohner: {{ value.tenant }}</li>
+      <li>EBF: {{ value.ebf }} [m2]</li>
+      <li>Bewohner: {{ value.tenant }} [Per.]</li>
       <li>Heizungstyp: {{ value.heating_type }}</li>
-      <li>Wärmeverteilung: {{ value.distribution_type }}/li>
-      <li>BWW: {{ values.hotwater_type }}</li>
+      <li>Wärmeverteilung: {{ value.distribution_type }}</li>
+      <li>BWW: {{ value.hotwater_type }}</li>
       <li>Kommentar: {{ value.comment }}</li>
       <li>++++++++++++++++++++++++++++++++++++++++++</li>
     {% endfor %}

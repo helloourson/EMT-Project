@@ -1,44 +1,104 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Readout, Building, Counter
 from .forms import ReadoutForm, BuildingForm, CounterForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def home(request):
     return render(request, 'emtapp/home.html')
 
-#Gebäude auslesen
+#####################
+# AUTHENTIFIZIERUNG #
+#####################
+# Nutzer anmelden
+def signup_user(request):
+    if request.method == 'GET':
+        # UserCreationForm anzeigen um neuen Nutzer zu erstellen
+        return render(request, 'emtapp/signup_user.html', {'form': UserCreationForm()})
+    else:
+        # Prüfen ob beide Passwörter gleich sind
+        if request.POST['password1'] == request.POST['password2']:
+            try:
+                # Neues Objekt in Model User erzeugen
+                user = User.objects.create_user(request.POST['username'], password=request.POST['password1'])
+                user.save()
+                login(request, user)  # Neuen Nutzer einloggen
+                return redirect('home')  # Mit view-Namen auf die Homepage weiterleiten
+
+            except IntegrityError:  # Wenn es einen IntegrityError ergibt dann Fehlermeldung an Nutzer ausgeben
+                return render(request, 'emtapp/signup_user.html',
+                              {'form': UserCreationForm(), 'error': 'Dieser Nutzername existiert schon. Bitte neuen Nutzernamen wählen.'})
+        else:
+            # Wenn Passwörter nicht gepasst haben
+            return render(request, 'emtapp/signup_user.html',
+                          {'form': UserCreationForm(), 'error': 'Passwörter sind nicht gleich!'})
+
+# Nutzer abmelden
+@login_required
+def logout_user(request):
+    # Nur mit einem POST-Request machen, da Browser im Hintergrund alle href-Links sofort ladet.
+    # Würde man die GET-Methode auch zulassen, wird der Browser den User sofort wieder ausloggen
+    if request.method == 'POST':
+        logout(request)  # Funktion aus Bibliothek django.contrib.auth
+        return redirect('home')
+
+# Nutzer einloggen
+def login_user(request):
+    if request.method == 'GET':
+        # UserCreationForm anzeigen um neuen Nutzer zu erstellen
+        return render(request, 'emtapp/login_user.html', {'form': AuthenticationForm()})
+    else:
+        # Achtung Input-Box Passwort ist nur noch password, nicht mehr password1
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        if user is None:
+            # Wenn Benutzer nicht vorhanden ist
+            return render(request, 'emtapp/login_user.html', {'form': AuthenticationForm(), 'error':'Benutzername und Passwort stimmten nicht überein.'})
+        else:
+            login(request, user)  # Nutzer einloggen
+            return redirect('home')  # Mit view-Namen auf die Homepage weiterleiten
+
+#######################
+# GEBÄUDE VERARBEITEN #
+#######################
+# Gebäude auslesen
+@login_required
 def building(request):
     values = Building.objects.all()
     return render(request, 'emtapp/building_list.html', {'values': values})
 
-#Neues Gebäude hinzufügen
+# Neues Gebäude hinzufügen
+@login_required
 def building_new(request):
-    submitted = False #Varable setzten Wie genau???
-    if request.method == 'POST': #Prüfen ob es eine POST Methode ist
+    submitted = False  # Variable setzten Wie genau???
+    if request.method == 'POST':  # Prüfen ob es eine POST Methode ist
         form = BuildingForm(request.POST)
-        if form.is_valid(): #Wenn Eingabewerte in Ordnung sind
-            # newreadout = form.save(commit=False) #Eine Instanz erstellen
+        if form.is_valid():  # Wenn Eingabewerte in Ordnung sind
+            # new_readout = form.save(commit=False) #Eine Instanz erstellen
             # cd = form.cleaned_data #Daten in Variabel cd schreiben um beim testen auslesen können
-            # assert False #ermögliche in Django-Error-Seite page Varibel cd zu betrachten
+            # assert False  # ermögliche in Django-Error-Seite page Variable cd zu betrachten
             form.save()
-            return HttpResponseRedirect('/building/new?submitted=True') #Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
+            return HttpResponseRedirect('/building/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         form = BuildingForm()
         if 'submitted' in request.GET:
             submitted = True
-    return render(request, 'emtapp/builiding.html', {'form': form, 'submitted': submitted})
+    return render(request, 'emtapp/building.html', {'form': form, 'submitted': submitted})
 
-#Neuer Zähler hinzufügen
+# Neuer Zähler hinzufügen
+@login_required
 def counter_new(request):
-    submitted = False #Variabel setzten Wie genau???
-    if request.method == 'POST': #Prüfen ob es eine POST Methode ist
+    submitted = False  # Variabel setzten Wie genau???
+    if request.method == 'POST':  # Prüfen ob es eine POST Methode ist
         form = CounterForm(request.POST)
-        if form.is_valid(): #Wenn Eingabewerte in Ordnung sind
+        if form.is_valid():  # Wenn Eingabewerte in Ordnung sind
             form.save()
-            return HttpResponseRedirect('/counter/new?submitted=True') #Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
+            return HttpResponseRedirect('/counter/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         form = CounterForm()
         if 'submitted' in request.GET:
@@ -46,101 +106,102 @@ def counter_new(request):
     return render(request, 'emtapp/counter.html', {'form': form, 'submitted': submitted})
 #
 
-#Zähler auflisten
+# Zähler auflisten
+@login_required
 def counter(request):
     counter_list = Counter.objects.all()
     return render(request, 'emtapp/counter_list.html', {'counter_list': counter_list})
 
-#Neue Ablesung hinzufügen
+##########################
+# ABLESUNGEN VERARBEITEN #
+##########################
+# Neue Ablesung hinzufügen
+@login_required
 def readout_new(request):
-    submitted = False #Varable setzten Wie genau???
-    if request.method == 'POST': #Prüfen ob es eine POST Methode ist
-        form = ReadoutForm(request.POST) #Werte aus dem Formular aufnehmen
-        if form.is_valid(): #Wenn Eingabewerte in Ordnung sind
-            #Umrechnung Ablesewert in Energie muss vor schliessen des Formulars erfolgen
-            newreadout = form.save(commit=False) #Eine Instanz, Kopie, erstellen
-            #Neue Umrechnungsmethode mit Wandlungsfaktor
-            z = newreadout.counter_id #Variable um Zähler ID auszulesen
-            u = Counter.objects.get(id=z).conversion #Wandlerfaktor des Zählers auslesen
-            newreadout.energy_1 = newreadout.register_1 * u #Zählerwert in Energie umrechnen
-            newreadout.energy_2 = newreadout.register_2 * u #Zählerwert in Energie umrechnen
+    submitted = False  # Variable wird 0 gesetzt
+    if request.method == 'POST':  # Prüfen ob es eine POST Methode ist
+        form = ReadoutForm(request.POST)  # Werte aus dem Formular aufnehmen
+        if form.is_valid():  # Wenn Eingabewerte in Ordnung sind
+            # Umrechnung Ablesewert in Energie muss vor schliessen des Formulars erfolgen
+            new_readout = form.save(commit=False)  # Eine Instanz, Kopie, erstellen
+            # Neue Umrechnungsmethode mit Wandlerfaktor
+            z = new_readout.counter_id  # Variable um Zähler ID auszulesen
+            u = Counter.objects.get(id=z).conversion  # Wandlerfaktor des Zählers auslesen
+            new_readout.energy_1 = new_readout.register_1 * u  # Zählerwert in Energie umrechnen
+            new_readout.energy_2 = new_readout.register_2 * u  # Zählerwert in Energie umrechnen
             form.save()
-            return HttpResponseRedirect('/readout/new?submitted=True') #Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
-    else: #Wenn es nicht eine POST Methode ist wird dieser Teil ausgeführt
-        form = ReadoutForm() #Leeres Formular anzeigen
+
+            return HttpResponseRedirect('/readout/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
+    else:  # Wenn es nicht eine POST Methode ist wird dieser Teil ausgeführt
+        form = ReadoutForm()  # Leeres Formular anzeigen
         if 'submitted' in request.GET:
             submitted = True
+
     return render(request, 'emtapp/readout.html', {'form': form, 'submitted': submitted})
 
-#Eine bestehende Ablesung ansehen und editieren können
+# Eine bestehende Ablesung ansehen und editieren können
+@login_required
 def readout_edit(request, readout_pk):
-    submitted = False #Varable setzten Wie genau??
-    readout = get_object_or_404(Readout, pk=readout_pk) #Werte der Ablesung werden aus der DB gelesen
-    if request.method == 'POST': #Prüfen ob es eine POST Methode ist
-        form = ReadoutForm(request.POST, instance=readout) #Eine Instanz, Kopie, der Ablesung erstellen
+    submitted = False  # Variable setzten Wie genau??
+    readout = get_object_or_404(Readout, pk=readout_pk)  # Werte der Ablesung werden aus der DB gelesen
+    if request.method == 'POST':  # Prüfen ob es eine POST Methode ist
+        form = ReadoutForm(request.POST, instance=readout)  # Eine Instanz, Kopie, der Ablesung erstellen
         if form.is_valid():
-            #Umrechnung Ablesewert in Energie muss vor schliessen des Frormulars erfolgen
-            newreadout = form.save(commit=False) #Eine Instanz, Kopie, erstellen
-            #Neue Umrechnungsmethode mit Wandlungsfaktor
-            z = newreadout.counter_id #Variable um Zähler ID auszulesen
-            u = Counter.objects.get(id=z).conversion #Wandlerfaktor des Zählers auslesen
-            newreadout.energy_1 = newreadout.register_1 * u #Zählerwert in Energie umrechnen
-            newreadout.energy_2 = newreadout.register_2 * u #Zählerwert in Energie umrechnen
+            # Umrechnung Ablesewert in Energie muss vor schliessen des Formulars erfolgen
+            new_readout = form.save(commit=False)  # Eine Instanz, Kopie, erstellen
+            # Neue Umrechnungsmethode mit Wandlungsfaktor
+            z = new_readout.counter_id  # Variable um Zähler ID auszulesen
+            u = Counter.objects.get(id=z).conversion  # Wandlerfaktor des Zählers auslesen
+            new_readout.energy_1 = new_readout.register_1 * u  # Zählerwert in Energie umrechnen
+            new_readout.energy_2 = new_readout.register_2 * u  # Zählerwert in Energie umrechnen
             # cd = form.cleaned_data #Daten in Variabel cd schreiben um beim testen auslesen können
-            #assert False #ermögliche in Django-Error-Seite page Varibel cd zu betrachten
+            #assert False #ermögliche in Django-Error-Seite page Variabel cd zu betrachten
             form.save()
-            return HttpResponseRedirect('/readout/new?submitted=True') #Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
+            return HttpResponseRedirect('/readout/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         form = ReadoutForm(instance=readout)
         if 'submitted' in request.GET:
             submitted = True
-    return render(request, 'emtapp/readout.html', {'form': form, 'submitted': submitted, 'readout_pk': readout_pk})
+    return render(request, 'emtapp/readout_edit.html', {'form': form, 'submitted': submitted, 'readout_pk': readout_pk})
 
-#FUNKTIONIERT NICHT WAAAAARUM? ZUSAMMENHANG MIT POST???????????????
-# #Ablesung löschen
-# def readout_delete(request, readout_pk):
-#     readout = get_object_or_404(Readout, pk=readout_pk) #Werte der Ablesung werden aus der DB gelesen
-#     if request.method == 'POST': #Prüfen ob es eine POST Methode ist
-#         readout.delete() #Ablesung löschen
-#         return HttpResponseRedirect('home') #Zurück zur Ableseliste
-#     return render(request, 'emtapp/readout_list.html')
-
-#ALTERNATIVER VERSUCH Ablesung löschen
-#FUNKTIONIERT NUR WENN URL EINGEGEBEN WIRD NICHT MIT BUTTON !!!!!!!!
+#Funktion wird ausgeführt, aber nur wenn Button-Knopf nur ausserhalb Table ist
+@login_required
 def readout_delete(request, readout_pk):
-    readout = get_object_or_404(Readout, pk=readout_pk) #Werte der Ablesung werden aus der DB gelesen
-    readout.delete() #Ablesung löschen
-    return redirect('home') #Liste mit Ablesungen aufrufen
-###########################################################################
+    readout = get_object_or_404(Readout, pk=readout_pk)  # Werte der Ablesung werden aus der DB gelesen
+    readout.delete()  # Ablesung löschen
+    return redirect('home')  # Liste mit Ablesungen aufrufen
 
 #Ablesewert auflisten
-def readout(request, counter_pk):
+@login_required
+def readout_list(request, counter_pk):
     # Die Ablesewerte des angewählten Zählers anzeigen
     readout_list = Readout.objects.filter(counter_id=counter_pk).order_by('-readout_date')
     # name_list = {"Fido": 8 , "Sally":17, "Sean": 10}
     return render(request, 'emtapp/readout_list.html', {'readout_list': readout_list})
 
 #Diagramm darstellen
-def diagramm(request, counter_pk):
-    value_list = Readout.objects.filter(counter_id= counter_pk).order_by('readout_date')
+@login_required
+def diagram(request, counter_pk):
+    value_list = Readout.objects.filter(counter_id=counter_pk).order_by('readout_date')
     # first_energy_value = value_list[0].energy_1
-    # last_energy_value = value_list[-1].energy_1
-    first_energy_value = Readout.objects.filter(counter_id= counter_pk).earliest('readout_date').energy_1
-    last_energy_value = Readout.objects.filter(counter_id= counter_pk).latest('readout_date').energy_1
+    # last_energy_value = value_list[-1].energy_1 #Letzter Teil in Liste kann nicht direkt ausgelesen werden
+    first_energy_value = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').energy_1
+    last_energy_value = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').energy_1
     consumption = last_energy_value-first_energy_value
     building = Building.objects.get(id=counter_pk)
     specific_consumption = consumption/building.ebf
-
-    first_readout_date = Readout.objects.filter(counter_id= counter_pk).earliest('readout_date').readout_date
-    last_readout_date = Readout.objects.filter(counter_id= counter_pk).latest('readout_date').readout_date
-    dauer = (last_readout_date-first_readout_date).days #Differenz in Tagen berechnen
-    consumption_heating_period = (consumption/dauer)*245 #Heizperiode 8 Monate
-
-    return render(request, 'emtapp/diagramm.html', {
+    first_readout_date = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').readout_date
+    last_readout_date = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').readout_date
+    period = (last_readout_date-first_readout_date).days  # Differenz in Tagen berechnen
+    if period <= 245:  # Falls Ablesung länger als Heizperiode 8 Monate ist, dann keine Korrektur mehr
+        consumption_heating_period = (consumption/period)*245  # Heizperiode 8 Monate
+    else:
+        consumption_heating_period = consumption
+    return render(request, 'emtapp/diagram.html', {
         'value_list': value_list,
         'consumption': consumption,
-        'building':building,
-        'specific_consumption':specific_consumption,
-        'dauer':dauer,
+        'building': building,
+        'specific_consumption': specific_consumption,
+        'period': period,
         'consumption_heating_period': consumption_heating_period
         })

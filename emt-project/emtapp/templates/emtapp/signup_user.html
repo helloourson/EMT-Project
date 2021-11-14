@@ -1,0 +1,19 @@
+<!-- Parent Template erweitern -->
+{% extends 'emtapp/base.html' %}
+
+<!-- Title einfügen -->
+{% block title %} sign_up.html {{ values.0 }} {% endblock title %}
+
+<!-- Teil wird in content eingefügt -->
+{% block content %}
+
+    <h1>Anmeldung</h1>
+    <h2>{{ error }}</h2>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <button typ="submit" >Anmelden</button>
+    </form>
+
+
+{% endblock %}

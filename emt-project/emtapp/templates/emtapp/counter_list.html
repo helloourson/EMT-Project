@@ -16,11 +16,11 @@
       <li>Zählertyp: {{ counter.counter_type }}</li>
       <li>Wandlerfaktor: {{ counter.conversion }}</li>
       <li>Überlauf: {{ counter.counter_overflow }}</li>
-      <form class="" action="{% url 'readout' counter.id %}" method="POST">
+      <form class="" action="{% url 'readout_list' counter.id %}" method="POST">
           {% csrf_token %}
           <button type="submit" name="button">Energieverbrauch als Liste</button>
       </form>
-      <form class="" action="{% url 'diagramm' counter.id %}" method="POST">
+      <form class="" action="{% url 'diagram' counter.id %}" method="POST">
           {% csrf_token %}
           <button type="submit" name="button">Energieverbrauch als Diagramm</button>
       </form>

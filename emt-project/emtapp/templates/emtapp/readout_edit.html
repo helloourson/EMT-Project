@@ -1,0 +1,45 @@
+<!-- Parent Template erweitern -->
+{% extends 'emtapp/base.html' %}
+
+<!-- Title einfügen -->
+{% block title %} readout.html Add Readout {% endblock title %}
+
+{% block content %}
+<h2>Neue Ablesung erfassen und in Datenbank schreiben</h2>
+
+<!-- Wenn in Formula Eingabewerte korrekt erfasst wurden -->
+{% if submitted %}
+  <p class="success">
+    Die Ablesung ist in der DB erfolgreich erfasst worden.
+  </p>
+
+{% else %}
+<form action="" method="POST" novalidate> <!-- novalidate verhindert Validierung im Browser -->
+  <table>
+    {{ form.as_table }}
+    <tr>
+        <td>&nbsp;</td>
+        <td><input type="submit" value="Speichern mit input Typ Submit"></td>
+    </tr>
+      {% csrf_token %}
+  </table>
+</form>
+
+<table>
+    <tr>
+        <td>
+            <p>DB-Eintrag PK: {{ readout_pk }}</p>
+        </td>
+        <td>
+            <!-- Wie kann Löschen-Button mit Speicher-Button ausgerichtet werden?  -->
+            <form Method="POST" action="{% url 'readout_delete' readout_pk %}">
+                <button type="submit" >Löschen_A</button>
+                {% csrf_token %}
+            </form>
+        </td>
+    </tr>
+</table>
+
+{% endif %}
+{% endblock content %}
+

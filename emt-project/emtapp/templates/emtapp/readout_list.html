@@ -2,13 +2,13 @@
 {% extends 'emtapp/base.html' %}
 
 <!-- Title einfügen -->
-{% block title %} readout.html {{ readouts.0 }} Liste {% endblock title %}
+{% block title %} readout_list.html {{ readouts.0 }}{% endblock title %}
 
   <!-- Teil wird in content eingefügt -->
 {% block content %}
       <h2>Zähler: {{ readout_list.0 }}</h2>
       <ul>
-        <!-- readout_list durchlaufen und jeweils Wert aulesen -->
+        <!-- readout_list durchlaufen und jeweils Wert auslesen -->
         {% for readout in readout_list %}
           <li>
             <a href="{% url 'readout_edit' readout.id %}">
@@ -21,7 +21,7 @@
       </ul>
 
 <!-- Aus Liste erster Key den Value/Wert auslesen -->
-<form class="" action="{% url 'diagramm' readout_list.0.counter_id %}" method="POST">
+<form class="" action="{% url 'diagram' readout_list.0.counter_id %}" method="POST">
     {% csrf_token %}
     <button type="submit" name="button">Energieverbrauch als Diagramm anzeigen</button>
 </form>

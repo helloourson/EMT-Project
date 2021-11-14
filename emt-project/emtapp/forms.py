@@ -7,15 +7,15 @@ class ReadoutForm(ModelForm):
     class Meta:
         model = Readout
         #fields = '__all__'
-        fields = ['counter','readout_date', 'register_1', 'register_2', 'comment']
+        fields = ['counter', 'readout_date', 'register_1', 'register_2', 'comment']
 
-#Formular um Gebäude zuerfassen
+#Formular um Gebäude erfassen
 class BuildingForm(ModelForm):
     class Meta:
         model = Building
         fields = '__all__'
 
-#Formular um Gebäude zuerfassen
+#Formular um Gebäude zufassen
 class CounterForm(ModelForm):
     class Meta:
         model = Counter
