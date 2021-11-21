@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
 from .models import Readout, Building, Counter
 from .forms import ReadoutForm, BuildingForm, CounterForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import *
 
 # Create your views here.
 def home(request):
@@ -69,8 +70,8 @@ def login_user(request):
 # Gebäude auslesen
 @login_required
 def building(request):
-    values = Building.objects.all()
-    return render(request, 'emtapp/building_list.html', {'values': values})
+    building_list = Building.objects.filter(user=request.user)
+    return render(request, 'emtapp/building_list.html', {'building_list': building_list})
 
 # Neues Gebäude hinzufügen
 @login_required
@@ -82,7 +83,9 @@ def building_new(request):
             # new_readout = form.save(commit=False) #Eine Instanz erstellen
             # cd = form.cleaned_data #Daten in Variabel cd schreiben um beim testen auslesen können
             # assert False  # ermögliche in Django-Error-Seite page Variable cd zu betrachten
-            form.save()
+            new_building = form.save(commit=False)  # Eine Kopie des Objektes machen und nicht jetzt in DB speichern
+            new_building.user = request.user  # User zum Objekt schreiben
+            new_building.save()  # Objekt mit User-ID abspeichern
             return HttpResponseRedirect('/building/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         form = BuildingForm()
@@ -96,8 +99,10 @@ def counter_new(request):
     submitted = False  # Variabel setzten Wie genau???
     if request.method == 'POST':  # Prüfen ob es eine POST Methode ist
         form = CounterForm(request.POST)
-        if form.is_valid():  # Wenn Eingabewerte in Ordnung sind
-            form.save()
+        if form.is_valid(): # Wenn Eingabewerte in Ordnung sind
+            new_counter = form.save(commit=False)
+            new_counter.user = request.user
+            new_counter.save()
             return HttpResponseRedirect('/counter/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         form = CounterForm()
@@ -109,7 +114,8 @@ def counter_new(request):
 # Zähler auflisten
 @login_required
 def counter(request):
-    counter_list = Counter.objects.all()
+    counter_list = Counter.objects.filter(user=request.user)  # Nur Zähler von User auflisten
+    # counter_list = Counter.objects.all
     return render(request, 'emtapp/counter_list.html', {'counter_list': counter_list})
 
 ##########################
@@ -123,14 +129,14 @@ def readout_new(request):
         form = ReadoutForm(request.POST)  # Werte aus dem Formular aufnehmen
         if form.is_valid():  # Wenn Eingabewerte in Ordnung sind
             # Umrechnung Ablesewert in Energie muss vor schliessen des Formulars erfolgen
-            new_readout = form.save(commit=False)  # Eine Instanz, Kopie, erstellen
+            new_readout = form.save(commit=False)  # Eine Instanz, Kopie, erstellen aber noch nicht speichern
             # Neue Umrechnungsmethode mit Wandlerfaktor
             z = new_readout.counter_id  # Variable um Zähler ID auszulesen
             u = Counter.objects.get(id=z).conversion  # Wandlerfaktor des Zählers auslesen
             new_readout.energy_1 = new_readout.register_1 * u  # Zählerwert in Energie umrechnen
             new_readout.energy_2 = new_readout.register_2 * u  # Zählerwert in Energie umrechnen
+            new_readout.user = request.user
             form.save()
-
             return HttpResponseRedirect('/readout/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:  # Wenn es nicht eine POST Methode ist wird dieser Teil ausgeführt
         form = ReadoutForm()  # Leeres Formular anzeigen
@@ -176,32 +182,41 @@ def readout_delete(request, readout_pk):
 def readout_list(request, counter_pk):
     # Die Ablesewerte des angewählten Zählers anzeigen
     readout_list = Readout.objects.filter(counter_id=counter_pk).order_by('-readout_date')
-    # name_list = {"Fido": 8 , "Sally":17, "Sean": 10}
-    return render(request, 'emtapp/readout_list.html', {'readout_list': readout_list})
+    # Fehler abfangen, falls noch keine Ablesung vorgenommen wurde
+    if readout_list.exists():  # Es besteht schon ein Datensatz
+        return render(request, 'emtapp/readout_list.html', {'readout_list': readout_list})
+    else:
+        # Keine Ablesung vorhanden und somit kein Datensatz vorhanden
+        return HttpResponse("<p>Es gibt noch keinen Ablesewert. Bitte zuerst Ablesung erfassen</p>")
 
 #Diagramm darstellen
 @login_required
 def diagram(request, counter_pk):
     value_list = Readout.objects.filter(counter_id=counter_pk).order_by('readout_date')
-    # first_energy_value = value_list[0].energy_1
-    # last_energy_value = value_list[-1].energy_1 #Letzter Teil in Liste kann nicht direkt ausgelesen werden
-    first_energy_value = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').energy_1
-    last_energy_value = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').energy_1
-    consumption = last_energy_value-first_energy_value
-    building = Building.objects.get(id=counter_pk)
-    specific_consumption = consumption/building.ebf
-    first_readout_date = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').readout_date
-    last_readout_date = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').readout_date
-    period = (last_readout_date-first_readout_date).days  # Differenz in Tagen berechnen
-    if period <= 245:  # Falls Ablesung länger als Heizperiode 8 Monate ist, dann keine Korrektur mehr
-        consumption_heating_period = (consumption/period)*245  # Heizperiode 8 Monate
+    # Fehler abfangen, falls noch keine Ablesung vorgenommen wurde
+    if value_list.exists():  # Es besteht schon ein Datensatz
+        # first_energy_value = value_list[0].energy_1
+        # last_energy_value = value_list[-1].energy_1 #Letzter Teil in Liste kann nicht direkt ausgelesen werden
+        first_energy_value = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').energy_1
+        last_energy_value = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').energy_1
+        consumption = last_energy_value-first_energy_value
+        building = Building.objects.get(id=counter_pk)
+        specific_consumption = consumption/building.ebf
+        first_readout_date = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').readout_date
+        last_readout_date = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').readout_date
+        period = (last_readout_date-first_readout_date).days  # Differenz in Tagen berechnen
+        if 0 < period <= 245:  # Falls Ablesung länger als Heizperiode 8 Monate ist, dann keine Korrektur mehr
+            consumption_heating_period = (consumption/period)*245  # Heizperiode 8 Monate
+        else:
+            consumption_heating_period = consumption
+        return render(request, 'emtapp/diagram.html', {
+            'value_list': value_list,
+            'consumption': consumption,
+            'building': building,
+            'specific_consumption': specific_consumption,
+            'period': period,
+            'consumption_heating_period': consumption_heating_period
+            })
     else:
-        consumption_heating_period = consumption
-    return render(request, 'emtapp/diagram.html', {
-        'value_list': value_list,
-        'consumption': consumption,
-        'building': building,
-        'specific_consumption': specific_consumption,
-        'period': period,
-        'consumption_heating_period': consumption_heating_period
-        })
+        # Keine Ablesung vorhanden und somit kein Datensatz vorhanden
+        return HttpResponse("<p>Es gibt noch keinen Ablesewert. Bitte zuerst Ablesung erfassen</p>")

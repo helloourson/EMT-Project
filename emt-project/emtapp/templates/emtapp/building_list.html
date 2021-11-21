@@ -8,17 +8,17 @@
 {% block content %}
   <h2>Registrierte Gebäude</h2>
   <ul>
-    {% for value in values %}
-      <li>ID: {{ value.id }}</li>
-      <li>Strasse: {{ value.street_number}}</li>
-      <li>Ort: {{ value.city }}</li>
-      <li>Haustyp: {{ value.building_type }}</li>
-      <li>EBF: {{ value.ebf }} [m2]</li>
-      <li>Bewohner: {{ value.tenant }} [Per.]</li>
-      <li>Heizungstyp: {{ value.heating_type }}</li>
-      <li>Wärmeverteilung: {{ value.distribution_type }}</li>
-      <li>BWW: {{ value.hotwater_type }}</li>
-      <li>Kommentar: {{ value.comment }}</li>
+    {% for building in building_list %}
+      <li>ID: {{ building.id }}</li>
+      <li>Strasse: {{ building.street_number}}</li>
+      <li>Ort: {{ building.city }}</li>
+      <li>Haustyp: {{ building.building_type }}</li>
+      <li>EBF: {{ building.ebf }} [m2]</li>
+      <li>Bewohner: {{ building.tenant }} [Per.]</li>
+      <li>Heizungstyp: {{ building.heating_type }}</li>
+      <li>Wärmeverteilung: {{ building.distribution_type }}</li>
+      <li>BWW: {{ building.hotwater_type }}</li>
+      <li>Kommentar: {{ building.comment }}</li>
       <li>++++++++++++++++++++++++++++++++++++++++++</li>
     {% endfor %}
   </ul>
