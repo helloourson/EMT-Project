@@ -1,19 +1,24 @@
 from django.shortcuts import render, redirect
 from .models import Readout, Building, Counter
-from .forms import ReadoutForm, BuildingForm, CounterForm
+from .forms import CounterByUserForm, ReadoutForm, BuildingForm, CounterForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.forms import modelformset_factory
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import *
+
+import logging
 
 # Create your views here.
 def home(request):
     return render(request, 'emtapp/home.html')
 
+
+logger = logging.getLogger()
 #####################
 # AUTHENTIFIZIERUNG #
 #####################
@@ -106,6 +111,7 @@ def counter_new(request):
             new_counter.save()
             return HttpResponseRedirect('/counter/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
+        # form = modelformset_factory(Counter, fields=('name', 'building', 'counter_type', 'conversion', 'counter_overflow'), formset=CounterByUserForm)
         form = CounterForm()
         if 'submitted' in request.GET:
             submitted = True
@@ -115,7 +121,13 @@ def counter_new(request):
 # Zähler auflisten
 @login_required
 def counter(request):
-    counter_list = Counter.objects.filter(user=request.user)  # Nur Zähler von User auflisten
+    current_user = request.user
+    user_from_db = User.objects.filter(id=current_user.id).first()
+    counter_list = []
+    for building in user_from_db.building_set.all():  # Alle buillding die diesem Benutzer gehören
+        for counter in building.counter_set.all():    # Alle Zähler die zu diesem Building gehören
+            counter_list.append(counter)
+    # counter_list = Counter.objects.filter(user=request.user)  # Nur Zähler von User auflisten
     # counter_list = Counter.objects.all
     return render(request, 'emtapp/counter_list.html', {'counter_list': counter_list})
 
