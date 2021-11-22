@@ -25,11 +25,18 @@ class BuildingForm(ModelForm):
 
 # Formular um Zähler zufassen
 class CounterForm(ModelForm):
-    model_choice = forms.ModelChoiceField(queryset= Building.objects.filter(user_id=3), initial=0)
+
+    def __init__(self, user=None, *args, **kwargs):
+        self.user = user
+        super(CounterForm, self).__init__(*args, **kwargs)  # Rufe Konstruktor der ModelForm auf
+        if self.user:
+            self.fields['building'].queryset = Building.objects.filter(user_id=self.user.id)  # Filter building auf mitgegebnen user
+
+    #model_choice = forms.ModelChoiceField(queryset= Building.objects.filter(user_id=3), initial=0)
     class Meta:
         model = Counter
         # fields = '__all__'
-        fields = ['name', 'model_choice', 'counter_type', 'conversion', 'counter_overflow']
+        fields = ['name', 'building', 'counter_type', 'conversion', 'counter_overflow']
         # fields = ['building']
 
 # class CounterForm(forms.Form):

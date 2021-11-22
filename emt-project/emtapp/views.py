@@ -112,7 +112,7 @@ def counter_new(request):
             return HttpResponseRedirect('/counter/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         # form = modelformset_factory(Counter, fields=('name', 'building', 'counter_type', 'conversion', 'counter_overflow'), formset=CounterByUserForm)
-        form = CounterForm()
+        form = CounterForm(user=request.user)
         if 'submitted' in request.GET:
             submitted = True
     return render(request, 'emtapp/counter.html', {'form': form, 'submitted': submitted})
