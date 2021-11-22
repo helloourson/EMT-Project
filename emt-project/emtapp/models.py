@@ -46,7 +46,7 @@ class Building(models.Model):
 # Django model Zähler erstellen
 class Counter(models.Model):
     name = models.CharField('Bezeichnung', max_length=100)  # Für Bezeichnung Zähler
-    building = models.ForeignKey(Building, on_delete=models.CASCADE)  # Ein Zähler kann nur in einem Haus verbaut sein, On-to-Many relationship
+    building = models.ForeignKey(Building, on_delete=models.CASCADE) # Ein Zähler kann nur in einem Haus verbaut sein, On-to-Many relationship
     #Auswahl der möglichen Zählertypen
     COUNTER_TYPE_CHOICES = [
         ('HLM', 'Heizölzähler Mechanisch'),
