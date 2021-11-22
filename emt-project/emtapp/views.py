@@ -102,6 +102,7 @@ def counter_new(request):
         if form.is_valid(): # Wenn Eingabewerte in Ordnung sind
             new_counter = form.save(commit=False)
             new_counter.user = request.user
+            # new_counter.building = Building.objects.get()
             new_counter.save()
             return HttpResponseRedirect('/counter/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
@@ -197,6 +198,7 @@ def diagram(request, counter_pk):
     if value_list.exists():  # Es besteht schon ein Datensatz
         # first_energy_value = value_list[0].energy_1
         # last_energy_value = value_list[-1].energy_1 #Letzter Teil in Liste kann nicht direkt ausgelesen werden
+        # Ein sep. Queryset, sollte verbessert werden optimale Variante liest letzte Element des Dictionary aus
         first_energy_value = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').energy_1
         last_energy_value = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').energy_1
         consumption = last_energy_value-first_energy_value

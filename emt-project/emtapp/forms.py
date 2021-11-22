@@ -23,3 +23,7 @@ class CounterForm(ModelForm):
         model = Counter
         # fields = '__all__'
         fields = ['name', 'building', 'counter_type', 'conversion', 'counter_overflow']
+        # fields = ['building']
+
+# class CounterForm(forms.Form):
+#     model_choice = forms.ModelChoiceField(queryset= Building.objects.filter(user_id=3), initial=0)
