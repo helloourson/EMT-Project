@@ -103,7 +103,7 @@ def building_new(request):
 def counter_new(request):
     submitted = False  # Variabel setzten Wie genau???
     if request.method == 'POST':  # Prüfen ob es eine POST Methode ist
-        form = CounterForm(request.POST)
+        form = CounterForm(user=None, form=request.POST)
         if form.is_valid(): # Wenn Eingabewerte in Ordnung sind
             new_counter = form.save(commit=False)
             new_counter.user = request.user

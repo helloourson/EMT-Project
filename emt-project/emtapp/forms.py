@@ -25,9 +25,9 @@ class BuildingForm(ModelForm):
 # Formular um Zähler zufassen
 class CounterForm(ModelForm):
     # Vorgehen um im Formular nur die Gebäude des eingeloggten Nutzers anzuzeigen
-    def __init__(self, user=None, *args, **kwargs):
+    def __init__(self, user=None, form=None, *args, **kwargs):
         self.user = user
-        super(CounterForm, self).__init__(*args, **kwargs)  # Rufe Konstruktor der ModelForm auf
+        super(CounterForm, self).__init__(form, *args, **kwargs)  # Rufe Konstruktor der ModelForm auf
         if self.user:  # Wenn ein user eingeloggt ist
             self.fields['building'].queryset = Building.objects.filter(user_id=self.user.id)  # Filter building auf mitgegeben user
 
