@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Readout, Building, Counter
-from .forms import CounterByUserForm, ReadoutForm, BuildingForm, CounterForm
+from .forms import ReadoutForm, BuildingForm, CounterForm
+# from .forms import CounterByUserForm
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -16,7 +17,6 @@ import logging
 # Create your views here.
 def home(request):
     return render(request, 'emtapp/home.html')
-
 
 logger = logging.getLogger()
 #####################
@@ -116,17 +116,17 @@ def counter_new(request):
         if 'submitted' in request.GET:
             submitted = True
     return render(request, 'emtapp/counter.html', {'form': form, 'submitted': submitted})
-#
 
 # Zähler auflisten
 @login_required
 def counter(request):
+    # Vorgehen um nur die Zähler des eingeloggten Nutzers anzuzeigen
     current_user = request.user
-    user_from_db = User.objects.filter(id=current_user.id).first()
-    counter_list = []
+    user_from_db = User.objects.filter(id=current_user.id).first()  # user-id des eingeloggten User
+    counter_list = []  # Eine leere Liste erzeugen
     for building in user_from_db.building_set.all():  # Alle buillding die diesem Benutzer gehören
         for counter in building.counter_set.all():    # Alle Zähler die zu diesem Building gehören
-            counter_list.append(counter)
+            counter_list.append(counter)  # Liste mit Werte füllen
     # counter_list = Counter.objects.filter(user=request.user)  # Nur Zähler von User auflisten
     # counter_list = Counter.objects.all
     return render(request, 'emtapp/counter_list.html', {'counter_list': counter_list})

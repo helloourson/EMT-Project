@@ -9,6 +9,7 @@ class ReadoutForm(ModelForm):
         model = Readout
         #fields = '__all__'
         fields = ['counter', 'readout_date', 'register_1', 'register_2', 'comment']
+# --> Verbesserung nur Zähler des eingeloggten Nutzers anzeigen
 
 # Formular um Gebäude erfassen
 class BuildingForm(ModelForm):
@@ -18,32 +19,27 @@ class BuildingForm(ModelForm):
         fields = ['street_number', 'city', 'building_type', 'year_construction',
                   'ebf', 'tenant', 'heating_type', 'distribution_type', 'comment']
 
-
-
 #  class CounterFormFilter(forms.Form):
 #      model_choice = forms.ModelChoiceField(queryset= Building.objects.filter(user_id=3), initial=0)
 
 # Formular um Zähler zufassen
 class CounterForm(ModelForm):
-
+    # Vorgehen um im Formular nur die Gebäude des eingeloggten Nutzers anzuzeigen
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
         super(CounterForm, self).__init__(*args, **kwargs)  # Rufe Konstruktor der ModelForm auf
-        if self.user:
-            self.fields['building'].queryset = Building.objects.filter(user_id=self.user.id)  # Filter building auf mitgegebnen user
+        if self.user:  # Wenn ein user eingeloggt ist
+            self.fields['building'].queryset = Building.objects.filter(user_id=self.user.id)  # Filter building auf mitgegeben user
 
-    #model_choice = forms.ModelChoiceField(queryset= Building.objects.filter(user_id=3), initial=0)
     class Meta:
         model = Counter
         # fields = '__all__'
         fields = ['name', 'building', 'counter_type', 'conversion', 'counter_overflow']
-        # fields = ['building']
 
 # class CounterForm(forms.Form):
 #     model_choice = forms.ModelChoiceField(queryset= Building.objects.filter(user_id=3), initial=0)
 
-
-class CounterByUserForm(BaseModelFormSet):
-    def __init__(self, current_user, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.queryset = Building.objects.filter(user_id=current_user)
+# class CounterByUserForm(BaseModelFormSet):
+#     def __init__(self, current_user, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.queryset = Building.objects.filter(user_id=current_user)
