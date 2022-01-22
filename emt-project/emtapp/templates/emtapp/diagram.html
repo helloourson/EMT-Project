@@ -27,7 +27,6 @@
   $(document).ready(function(){
     var ctx = document.getElementById('myChart').getContext('2d'); //Chart wird bei tag mit id=myChart eingesetzt
     var myChart = new Chart(ctx, {
-        // type: 'bar',
         type: "bar",
         data: {
             // labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
@@ -54,9 +53,10 @@
             scales: {
               y: {
                 title: {
+                  // Titel Y-Achse in der Mitte schreiben
                   display: true,
                   text: "[kWh]",
-                  // align: "start"
+                  align: "center"
                 }
               }
             }

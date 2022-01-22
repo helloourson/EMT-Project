@@ -6,10 +6,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from django.db import IntegrityError
-from django.forms import modelformset_factory
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
+from django.forms import modelformset_factory
 from django.core.exceptions import *
 
 import logging
@@ -103,17 +103,19 @@ def building_new(request):
 def counter_new(request):
     submitted = False  # Variabel setzten Wie genau???
     if request.method == 'POST':  # Prüfen ob es eine POST Methode ist
-        form = CounterForm(user=None, form=request.POST)
-        if form.is_valid(): # Wenn Eingabewerte in Ordnung sind
-            new_counter = form.save(commit=False)
-            new_counter.user = request.user
+        # Formular mit den Daten wird mit POST-Methode übermittelt, ist also eine POST-Methode
+        form = CounterForm(user=None, form=request.POST)  # Die ausgefüllten Formular-Daten aufnehmen. Kein Wert für
+        # user aufnehmen, wird später eingefügt
+        if form.is_valid():  # Prüfen ob Eingabewerte in Ordnung sind
+            new_counter = form.save(commit=False)  # Neues Objekt mit den Formular-Werten erstellen, aber noch nicht in DB speichern
+            new_counter.user = request.user  # Dem Objekt den eingeloggten user zuweisen
             # new_counter.building = Building.objects.get()
             new_counter.save()
             return HttpResponseRedirect('/counter/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         # form = modelformset_factory(Counter, fields=('name', 'building', 'counter_type', 'conversion', 'counter_overflow'), formset=CounterByUserForm)
         form = CounterForm(user=request.user)
-        if 'submitted' in request.GET:
+        if 'submitted' in request.GET:  # Wenn Methode GET ist, dann soll ein leeres Formular anzeigen
             submitted = True
     return render(request, 'emtapp/counter.html', {'form': form, 'submitted': submitted})
 
@@ -137,11 +139,13 @@ def counter(request):
 # Neue Ablesung hinzufügen
 @login_required
 def readout_new(request):
+    # Wenn Formular aufgerufen wird, ist dies eine GET-Anfrage
     submitted = False  # Variable wird 0 gesetzt
-    if request.method == 'POST':  # Prüfen ob es eine POST Methode ist
-        form = ReadoutForm(request.POST)  # Werte aus dem Formular aufnehmen
+    if request.method == 'POST':  # Wenn Formular mit Submit-Knopf und Methode POST abgesendet wird.
+        # form = ReadoutForm(request.POST)  # Werte aus dem Formular aufnehmen
+        form = ReadoutForm(user=None, form=request.POST)
         if form.is_valid():  # Wenn Eingabewerte in Ordnung sind
-            # Umrechnung Ablesewert in Energie muss vor schliessen des Formulars erfolgen
+            # Umrechnung Ablesewert in Energie muss vor Schliessen des Formulars erfolgen
             new_readout = form.save(commit=False)  # Eine Instanz, Kopie, erstellen aber noch nicht speichern
             # Neue Umrechnungsmethode mit Wandlerfaktor
             z = new_readout.counter_id  # Variable um Zähler ID auszulesen
@@ -155,7 +159,8 @@ def readout_new(request):
         form = ReadoutForm()  # Leeres Formular anzeigen
         if 'submitted' in request.GET:
             submitted = True
-
+    # Wenn das Programm das erste mal aufgerufen wird Sprung hierher vollzogen, da es eine GET-Anfrage ist, leeres Formular
+    # wird angezeigt. Wenn Formular mit Submit-Button abgesendet wird ist es eine POST-Anfrage
     return render(request, 'emtapp/readout.html', {'form': form, 'submitted': submitted})
 
 # Eine bestehende Ablesung ansehen und editieren können
@@ -214,8 +219,9 @@ def diagram(request, counter_pk):
         first_energy_value = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').energy_1
         last_energy_value = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').energy_1
         consumption = last_energy_value-first_energy_value
-        building = Building.objects.get(id=counter_pk)
-        specific_consumption = consumption/building.ebf
+        building_pk = Counter.objects.get(id=counter_pk).building_id  # In Tabelle-Zähler die Gebäude-ID auslesen
+        building = Building.objects.get(id=building_pk)  # Neues Objekt building erstellen
+        specific_consumption = consumption/building.ebf  # Spezifischer Energieverbrauch berechnen
         first_readout_date = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').readout_date
         last_readout_date = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').readout_date
         period = (last_readout_date-first_readout_date).days  # Differenz in Tagen berechnen

@@ -20,7 +20,6 @@ urlpatterns = [
 
     # Ablesungen
     path('readout/new', views.readout_new, name='readout_new'),
-
     path('readout/<int:readout_pk>/edit', views.readout_edit, name='readout_edit'),
     path('readout/<int:readout_pk>/delete', views.readout_delete, name='readout_delete'),
 

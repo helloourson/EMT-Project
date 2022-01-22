@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'emtapp.apps.EmtappConfig', #Emtapp registrieren
+    'emtapp.apps.EmtappConfig',  # Emtapp registrieren
 ]
 
 MIDDLEWARE = [

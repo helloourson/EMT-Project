@@ -21,6 +21,7 @@
       </ul>
 
 <!-- Aus Liste erster Key den Value/Wert auslesen -->
+<!-- Könnte hier eine GET-Methode eingesetzt werden? Es ist ja nur eine Abfrage an den Server. Zu Prüfen -->
 <form class="" action="{% url 'diagram' readout_list.0.counter_id %}" method="POST">
     {% csrf_token %}
     <button type="submit" name="button">Energieverbrauch als Diagramm anzeigen</button>
