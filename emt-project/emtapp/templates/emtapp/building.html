@@ -5,22 +5,32 @@
 {% block title %} building.html Add Building {% endblock title %}
 
 {% block content %}
-<h2>Neues Gebäude erfassen und in Datenbank schreiben</h2>
+<h2 class="mt-2">Neues Gebäude erfassen und in Datenbank schreiben</h2>
+<!-- Horizontalen Strich einfügen -->
+<hr class="mt-0 mb-4">
 
 {% if submitted %}
   <p class="success">
     Das Gebäude ist in der DB erfolgreich erfasst worden.
   </p>
 {% else %}
+{#  <form action="" method="POST" novalidate>#}
+{#  <table class="table  table-responsive table-bordered table-hover">#}
+{#    {{ form.as_table }}#}
+{#    <tr>#}
+{#      <td>&nbsp;</td> <!-- Non-breaking space -->#}
+{#      <td><button type="submit" >Speichern</button></td>#}
+{#    </tr>#}
+{##}
+{#  </table>#}
+{#  {% csrf_token %}#}
+{#  </form>#}
   <form action="" method="POST" novalidate>
-  <table>
-    {{ form.as_table }}
-    <tr>
-      <td>&nbsp;</td>
-      <td><button type="submit">Speichern</button></td>
-    </tr>
-  </table>
-  {% csrf_token %}
+    <div class="container">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <button type="submit" >Speichern</button>
+    </div>
   </form>
 {% endif %}
 {% endblock content %}

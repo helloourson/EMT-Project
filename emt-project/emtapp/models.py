@@ -57,7 +57,7 @@ class Counter(models.Model):
         ('SDT', 'Stromzähler Doppeltarif'),
         ]
     counter_type = models.CharField('Typ', max_length=50, choices= COUNTER_TYPE_CHOICES, default='EDG')
-    conversion = models.FloatField('Wandlerfaktor', help_text= 'Heizöl: X[Lit/cm], X[Lit/%], 1[Lit], Erdgas 11.452 [kWh/m3], Strom 1[kWhel]', default=11.452)
+    conversion = models.FloatField('Wandlerfaktor', help_text= 'Heizöl: X[Lit/cm], X[Lit/%], 1[Lit], Erdgas 10.6 [kWh/m3], Strom 1[kWhel]', default=10.6)
     counter_overflow = models.BooleanField('Überlauf')
     # user = models.ForeignKey(User, on_delete=models.CASCADE)  # Damit zum jeweiligen Zähler der User hinzugefügt werden kann
 
@@ -77,7 +77,10 @@ class Readout(models.Model):
     comment = models.TextField('Kommentar [-]', max_length=200, default='-')
     energy_1 = models.IntegerField('Energie Register Nr.1 [kWh]')
     energy_2 = models.IntegerField('Energie Register Nr.2 [kWh]', default=0)
+    consumption_1 = models.IntegerField('Energieverbrauch Register Nr.1 [kWh]')
+    consumption_2 = models.IntegerField('Energieverbrauch Register Nr.2 [kWh]')
     # user = models.ForeignKey(User, on_delete=models.CASCADE)  # Damit zur jeweiligen Ablesung der User hinzugefügt werden kann
+
     def __str__(self):
         return f'{self.counter}'  # Zahl in ein Zeichen String umwandeln, ansonsten ergibt sich ein Fehler
 

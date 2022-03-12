@@ -13,7 +13,7 @@
           <li>
             <a href="{% url 'readout_edit' readout.id %}">
               {{ readout.readout_date | date:"d m Y"}}
-              - <b> {{ readout.energy_1 }} [kWh] </b>
+              - <b> {{ readout.consumption_1 }} [kWh] </b>
               - {{ readout.comment }}
             </a>
           </li>

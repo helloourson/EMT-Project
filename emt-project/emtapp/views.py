@@ -14,11 +14,15 @@ from django.core.exceptions import *
 
 import logging
 
+
 # Create your views here.
 def home(request):
     return render(request, 'emtapp/home.html')
 
+
 logger = logging.getLogger()
+
+
 #####################
 # AUTHENTIFIZIERUNG #
 #####################
@@ -39,11 +43,13 @@ def signup_user(request):
 
             except IntegrityError:  # Wenn es einen IntegrityError ergibt dann Fehlermeldung an Nutzer ausgeben
                 return render(request, 'emtapp/signup_user.html',
-                              {'form': UserCreationForm(), 'error': 'Dieser Nutzername existiert schon. Bitte neuen Nutzernamen wählen.'})
+                              {'form': UserCreationForm(),
+                               'error': 'Dieser Nutzername existiert schon. Bitte neuen Nutzernamen wählen.'})
         else:
             # Wenn Passwörter nicht gepasst haben
             return render(request, 'emtapp/signup_user.html',
                           {'form': UserCreationForm(), 'error': 'Passwörter sind nicht gleich!'})
+
 
 # Nutzer abmelden
 @login_required
@@ -53,6 +59,7 @@ def logout_user(request):
     if request.method == 'POST':
         logout(request)  # Funktion aus Bibliothek django.contrib.auth
         return redirect('home')
+
 
 # Nutzer einloggen
 def login_user(request):
@@ -64,10 +71,12 @@ def login_user(request):
         user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
         if user is None:
             # Wenn Benutzer nicht vorhanden ist
-            return render(request, 'emtapp/login_user.html', {'form': AuthenticationForm(), 'error':'Benutzername und Passwort stimmten nicht überein.'})
+            return render(request, 'emtapp/login_user.html',
+                          {'form': AuthenticationForm(), 'error': 'Benutzername und Passwort stimmten nicht überein.'})
         else:
             login(request, user)  # Nutzer einloggen
             return redirect('home')  # Mit view-Namen auf die Homepage weiterleiten
+
 
 #######################
 # GEBÄUDE VERARBEITEN #
@@ -77,6 +86,7 @@ def login_user(request):
 def building(request):
     building_list = Building.objects.filter(user=request.user)
     return render(request, 'emtapp/building_list.html', {'building_list': building_list})
+
 
 # Neues Gebäude hinzufügen
 @login_required
@@ -91,12 +101,14 @@ def building_new(request):
             new_building = form.save(commit=False)  # Eine Kopie des Objektes machen und nicht jetzt in DB speichern
             new_building.user = request.user  # User zum Objekt schreiben
             new_building.save()  # Objekt mit User-ID abspeichern
-            return HttpResponseRedirect('/building/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
+            return HttpResponseRedirect(
+                '/building/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         form = BuildingForm()
         if 'submitted' in request.GET:
             submitted = True
     return render(request, 'emtapp/building.html', {'form': form, 'submitted': submitted})
+
 
 # Neuer Zähler hinzufügen
 @login_required
@@ -107,17 +119,20 @@ def counter_new(request):
         form = CounterForm(user=None, form=request.POST)  # Die ausgefüllten Formular-Daten aufnehmen. Kein Wert für
         # user aufnehmen, wird später eingefügt
         if form.is_valid():  # Prüfen ob Eingabewerte in Ordnung sind
-            new_counter = form.save(commit=False)  # Neues Objekt mit den Formular-Werten erstellen, aber noch nicht in DB speichern
+            new_counter = form.save(
+                commit=False)  # Neues Objekt mit den Formular-Werten erstellen, aber noch nicht in DB speichern
             new_counter.user = request.user  # Dem Objekt den eingeloggten user zuweisen
             # new_counter.building = Building.objects.get()
             new_counter.save()
-            return HttpResponseRedirect('/counter/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
+            return HttpResponseRedirect(
+                '/counter/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         # form = modelformset_factory(Counter, fields=('name', 'building', 'counter_type', 'conversion', 'counter_overflow'), formset=CounterByUserForm)
         form = CounterForm(user=request.user)
         if 'submitted' in request.GET:  # Wenn Methode GET ist, dann soll ein leeres Formular anzeigen
             submitted = True
     return render(request, 'emtapp/counter.html', {'form': form, 'submitted': submitted})
+
 
 # Zähler auflisten
 @login_required
@@ -127,11 +142,12 @@ def counter(request):
     user_from_db = User.objects.filter(id=current_user.id).first()  # user-id des eingeloggten User
     counter_list = []  # Eine leere Liste erzeugen
     for building in user_from_db.building_set.all():  # Alle buillding die diesem Benutzer gehören
-        for counter in building.counter_set.all():    # Alle Zähler die zu diesem Building gehören
+        for counter in building.counter_set.all():  # Alle Zähler die zu diesem Building gehören
             counter_list.append(counter)  # Liste mit Werte füllen
     # counter_list = Counter.objects.filter(user=request.user)  # Nur Zähler von User auflisten
     # counter_list = Counter.objects.all
     return render(request, 'emtapp/counter_list.html', {'counter_list': counter_list})
+
 
 ##########################
 # ABLESUNGEN VERARBEITEN #
@@ -152,9 +168,20 @@ def readout_new(request):
             u = Counter.objects.get(id=z).conversion  # Wandlerfaktor des Zählers auslesen
             new_readout.energy_1 = new_readout.register_1 * u  # Zählerwert in Energie umrechnen
             new_readout.energy_2 = new_readout.register_2 * u  # Zählerwert in Energie umrechnen
+            # Energieverbrauch berechnen = (Neuer - Alter) Energiestand
+            # Fehler abfangen, falls noch keine Ablesung vorgenommen wurde
+            if Readout.objects.filter(counter_id=z).exists():  # Es besteht schon ein Datensatz
+                new_readout.consumption_1 = new_readout.energy_1 - \
+                                            Readout.objects.order_by("-readout_date").filter(counter_id=z)[0].energy_1
+                new_readout.consumption_2 = new_readout.energy_2 - \
+                                            Readout.objects.order_by("-readout_date").filter(counter_id=z)[0].energy_2
+            else:  # Es ist die erste Ablesung, es gibt also noch keine Verbraeuche
+                new_readout.consumption_1 = 0
+                new_readout.consumption_2 = 0
             new_readout.user = request.user
             form.save()
-            return HttpResponseRedirect('/readout/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
+            return HttpResponseRedirect(
+                '/readout/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:  # Wenn es nicht eine POST Methode ist wird dieser Teil ausgeführt
         form = ReadoutForm()  # Leeres Formular anzeigen
         if 'submitted' in request.GET:
@@ -162,6 +189,7 @@ def readout_new(request):
     # Wenn das Programm das erste mal aufgerufen wird Sprung hierher vollzogen, da es eine GET-Anfrage ist, leeres Formular
     # wird angezeigt. Wenn Formular mit Submit-Button abgesendet wird ist es eine POST-Anfrage
     return render(request, 'emtapp/readout.html', {'form': form, 'submitted': submitted})
+
 
 # Eine bestehende Ablesung ansehen und editieren können
 @login_required
@@ -178,24 +206,29 @@ def readout_edit(request, readout_pk):
             u = Counter.objects.get(id=z).conversion  # Wandlerfaktor des Zählers auslesen
             new_readout.energy_1 = new_readout.register_1 * u  # Zählerwert in Energie umrechnen
             new_readout.energy_2 = new_readout.register_2 * u  # Zählerwert in Energie umrechnen
+            # Energieverbrauch berechnen, alle nachfolgende bestehende Verbraeuche müssten neu berechnet und in DB geschrieben werden
+
             # cd = form.cleaned_data #Daten in Variabel cd schreiben um beim testen auslesen können
-            #assert False #ermögliche in Django-Error-Seite page Variabel cd zu betrachten
+            # assert False #ermögliche in Django-Error-Seite page Variabel cd zu betrachten
             form.save()
-            return HttpResponseRedirect('/readout/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
+            return HttpResponseRedirect(
+                '/readout/new?submitted=True')  # Variable submitted Wahr, die Bestätigung Eingabe war erfolgreich
     else:
         form = ReadoutForm(instance=readout)
         if 'submitted' in request.GET:
             submitted = True
     return render(request, 'emtapp/readout_edit.html', {'form': form, 'submitted': submitted, 'readout_pk': readout_pk})
 
-#Funktion wird ausgeführt, aber nur wenn Button-Knopf nur ausserhalb Table ist
+
+# Funktion wird ausgeführt, aber nur wenn Button-Knopf nur ausserhalb Table ist
 @login_required
 def readout_delete(request, readout_pk):
     readout = get_object_or_404(Readout, pk=readout_pk)  # Werte der Ablesung werden aus der DB gelesen
     readout.delete()  # Ablesung löschen
     return redirect('home')  # Liste mit Ablesungen aufrufen
 
-#Ablesewert auflisten
+
+# Ablesewert auflisten
 @login_required
 def readout_list(request, counter_pk):
     # Die Ablesewerte des angewählten Zählers anzeigen
@@ -207,7 +240,8 @@ def readout_list(request, counter_pk):
         # Keine Ablesung vorhanden und somit kein Datensatz vorhanden
         return HttpResponse("<p>Es gibt noch keinen Ablesewert. Bitte zuerst Ablesung erfassen</p>")
 
-#Diagramm darstellen
+
+# Diagramm darstellen
 @login_required
 def diagram(request, counter_pk):
     value_list = Readout.objects.filter(counter_id=counter_pk).order_by('readout_date')
@@ -218,15 +252,15 @@ def diagram(request, counter_pk):
         # Ein sep. Queryset, sollte verbessert werden optimale Variante liest letzte Element des Dictionary aus
         first_energy_value = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').energy_1
         last_energy_value = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').energy_1
-        consumption = last_energy_value-first_energy_value
+        consumption = last_energy_value - first_energy_value
         building_pk = Counter.objects.get(id=counter_pk).building_id  # In Tabelle-Zähler die Gebäude-ID auslesen
         building = Building.objects.get(id=building_pk)  # Neues Objekt building erstellen
-        specific_consumption = consumption/building.ebf  # Spezifischer Energieverbrauch berechnen
+        specific_consumption = consumption / building.ebf  # Spezifischer Energieverbrauch berechnen
         first_readout_date = Readout.objects.filter(counter_id=counter_pk).earliest('readout_date').readout_date
         last_readout_date = Readout.objects.filter(counter_id=counter_pk).latest('readout_date').readout_date
-        period = (last_readout_date-first_readout_date).days  # Differenz in Tagen berechnen
+        period = (last_readout_date - first_readout_date).days  # Differenz in Tagen berechnen
         if 0 < period <= 245:  # Falls Ablesung länger als Heizperiode 8 Monate ist, dann keine Korrektur mehr
-            consumption_heating_period = (consumption/period)*245  # Heizperiode 8 Monate
+            consumption_heating_period = (consumption / period) * 245  # Heizperiode 8 Monate
         else:
             consumption_heating_period = consumption
         return render(request, 'emtapp/diagram.html', {
@@ -236,7 +270,7 @@ def diagram(request, counter_pk):
             'specific_consumption': specific_consumption,
             'period': period,
             'consumption_heating_period': consumption_heating_period
-            })
+        })
     else:
         # Keine Ablesung vorhanden und somit kein Datensatz vorhanden
         return HttpResponse("<p>Es gibt noch keinen Ablesewert. Bitte zuerst Ablesung erfassen</p>")

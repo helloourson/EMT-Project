@@ -38,7 +38,8 @@
                 // data: [12, 19, 3, 5, 2, 3],
                 //Ablesewerte aus DB ausgelesen
                 // data: [{% for value in values %} "{{ value.energy_1 }}", {% endfor %}],
-                data: [{% for item in value_list %} "{{ item.energy_1 }}", {% endfor %}],
+                // Anpassung Diagramm um Energieverbrauch darzustellen
+                data: [{% for item in value_list %} "{{ item.consumption_1 }}", {% endfor %}],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                 ],

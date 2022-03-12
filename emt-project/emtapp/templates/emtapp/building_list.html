@@ -6,7 +6,9 @@
 
   <!-- Teil wird in content eingefügt -->
 {% block content %}
-  <h2>Registrierte Gebäude</h2>
+  <h2 class="mt-2" >Registrierte Gebäude</h2>
+  <hr class="mt-0 mb-4">
+
   <ul>
     {% for building in building_list %}
       <li>ID: {{ building.id }}</li>
