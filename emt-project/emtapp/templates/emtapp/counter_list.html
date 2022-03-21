@@ -6,25 +6,34 @@
 
   <!-- Teil wird in content eingefügt -->
 {% block content %}
-<h2 lass="mt-2">Registrierte Zähler</h2>
-<hr class="mt-0 mb-4">
-  <ul>
+    <h2 class="mt-2 text-center">Registrierte Zähler</h2>
+    <hr class="mt-0 mb-4">
+
+    <div class="row justify-content-center">
     {% for counter in counter_list %}
-      <li>Zähler-ID: {{ counter.id }}</li>
-      <li>Standort: {{ counter.building }}</li>
-      <li>Name:<b>{% filter striptags|upper %} {{ counter.name }}   {% endfilter %} </b> </li>
-      <li>Zählertyp: {{ counter.counter_type }}</li>
-      <li>Wandlerfaktor: {{ counter.conversion }}</li>
-      <li>Überlauf: {{ counter.counter_overflow }}</li>
-      <form class="" action="{% url 'readout_list' counter.id %}" method="POST">
-          {% csrf_token %}
-          <button type="submit" name="button">Energieverbrauch als Liste</button>
-      </form>
-      <form class="" action="{% url 'diagram' counter.id %}" method="POST">
-          {% csrf_token %}
-          <button type="submit" name="button">Energieverbrauch als Diagramm</button>
-      </form>
-      <li>++++++++++++++++++++++++++++++++++++++++++</li>
+        <div class="col">
+            <ul class="list-group">
+                <li class="list-group-item">Zähler-ID: {{ counter.id }}</li>
+                <li class="list-group-item">Gebäude_ID: {{ counter.building_id }}</li>
+                <li class="list-group-item">Strasse: {{ counter.building }}</li>
+                <li class="list-group-item">Name:<b>{% filter striptags|upper %} {{ counter.name }}   {% endfilter %} </b> </li>
+                <li class="list-group-item">Zählertyp: {{ counter.counter_type }}</li>
+                <li class="list-group-item">Wandlerfaktor: {{ counter.conversion }}</li>
+                <li class="list-group-item">Überlauf: {{ counter.counter_overflow }}</li>
+
+                <form  action="{% url 'readout_list' counter.id %}" method="POST">
+                  {% csrf_token %}
+                    <br>
+                    <button class="btn btn-secondary btn-sm btn-block" type="submit" name="button">Energieverbrauch als Liste</button>
+                </form>
+                <form class="" action="{% url 'diagram' counter.id %}" method="POST">
+                    {% csrf_token %}
+                    <br>
+                    <button class="btn btn-secondary btn-sm btn-block" type="submit" name="button">Energieverbrauch als Diagramm</button>
+                </form>
+            </ul>
+                <br>
+        </div>
     {% endfor %}
-  </ul>
+    </div>
 {% endblock %}

@@ -37,6 +37,22 @@ class BuildingForm(ModelForm):
         fields = ['street_number', 'city', 'building_type', 'year_construction',
                   'ebf', 'tenant', 'heating_type', 'distribution_type',
                   'hotwater_type', 'comment']
+        # Um Forms  mit Bootstrap stylen zu können werden benötigt man diese widgets
+        widgets = {
+            'street_number' : forms.TextInput(attrs={'class': 'form-control'}),
+            'city': forms.TextInput(attrs={'class': 'form-control'}),
+            'building_type': forms.Select(attrs={'class': 'form-control'}),
+            'year_construction': forms.DateInput(attrs={'class': 'form-control'}),
+            'ebf': forms.NumberInput(attrs={'class': 'form-control'}),
+            'tenant': forms.NumberInput(attrs={'class': 'form-control'}),
+            'heating_type': forms.Select(attrs={'class': 'form-control'}),
+            'distribution_type': forms.Select(attrs={'class': 'form-control'}),
+            'hotwater_type': forms.Select(attrs={'class': 'form-control'}),
+            'comment': forms.Textarea(attrs={'class': 'form-control'}),
+
+
+
+        }
 
 #  class CounterFormFilter(forms.Form):
 #      model_choice = forms.ModelChoiceField(queryset= Building.objects.filter(user_id=3), initial=0)

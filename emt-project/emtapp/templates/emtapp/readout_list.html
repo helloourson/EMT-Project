@@ -6,25 +6,29 @@
 
   <!-- Teil wird in content eingefügt -->
 {% block content %}
-      <h2>Zähler: {{ readout_list.0 }}</h2>
-      <ul>
-        <!-- readout_list durchlaufen und jeweils Wert auslesen -->
-        {% for readout in readout_list %}
-          <li>
-            <a href="{% url 'readout_edit' readout.id %}">
-              {{ readout.readout_date | date:"d m Y"}}
-              - <b> {{ readout.consumption_1 }} [kWh] </b>
-              - {{ readout.comment }}
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
+    <h2 class="mt-2 text-center">Ablesungen: {{ readout_list.0 }}</h2>
+    <hr class="mt-0 mb-4">
 
-<!-- Aus Liste erster Key den Value/Wert auslesen -->
-<!-- Könnte hier eine GET-Methode eingesetzt werden? Es ist ja nur eine Abfrage an den Server. Zu Prüfen -->
-<form class="" action="{% url 'diagram' readout_list.0.counter_id %}" method="POST">
-    {% csrf_token %}
-    <button type="submit" name="button">Energieverbrauch als Diagramm anzeigen</button>
-</form>
-
+    <div class="row justify-content-center">
+        <div class="col-10">
+            <ul class="list-group justify-content-center">
+                {% for readout in readout_list %}
+                    {#  List Group mit Link erstellen  #}
+                    <a href="{% url 'readout_edit' readout.id %}" class="list-group-item list-group-item-action">
+                        Datum: <b> {{ readout.readout_date | date:"d.m.Y"}} </b>
+                        Zählerwert Register1: <b> {{ readout.register_1 }} </b>
+                        Verbrauch: <b> {{ readout.consumption_1 }} [kWh] </b>
+                        Kommentar: <b> {{ readout.comment }}</b>
+                    </a>
+                {% endfor %}
+                <!-- Aus Liste erster Key den Value/Wert auslesen -->
+                <!-- Könnte hier eine GET-Methode eingesetzt werden? Es ist ja nur eine Abfrage an den Server. Zu Prüfen -->
+                <form class="" action="{% url 'diagram' readout_list.0.counter_id %}" method="POST">
+                    <br>
+                    {% csrf_token %}
+                    <button class="btn btn-secondary btn-sm btn-block" type="submit" name="button">Energieverbrauch als Diagramm anzeigen</button>
+                </form>
+            </ul>
+        </div>
+    </div>
 {% endblock %}

@@ -6,14 +6,14 @@
 
 <!-- Teil wird in content eingefügt -->
 {% block content %}
-
-    <h1>Anmeldung</h1>
-    <h2>{{ error }}</h2>
+    <h2 class="mt-2 text-center">Registrierung</h2>
+    <!-- Horizontalen Strich einfügen -->
+    <hr class="mt-0 mb-4">
     <form action="" method="POST">
+    <h3> {{ error }} </h3>
         {% csrf_token %}
         {{ form.as_p }}
     <button typ="submit" >Anmelden</button>
     </form>
-
 
 {% endblock %}

@@ -4,24 +4,29 @@
 <!-- Title einfügen -->
 {% block title %} building_list.html {% endblock title %}
 
-  <!-- Teil wird in content eingefügt -->
+<!-- Teil wird in content eingefügt -->
 {% block content %}
-  <h2 class="mt-2" >Registrierte Gebäude</h2>
-  <hr class="mt-0 mb-4">
+    <h2 class="mt-2 text-center" > Registrierte Gebäude für {{ user.username }}</h2>
+    <hr class="mt-0 mb-4">
 
-  <ul>
+    <div class="row justify-content-center">
     {% for building in building_list %}
-      <li>ID: {{ building.id }}</li>
-      <li>Strasse: {{ building.street_number}}</li>
-      <li>Ort: {{ building.city }}</li>
-      <li>Haustyp: {{ building.building_type }}</li>
-      <li>EBF: {{ building.ebf }} [m2]</li>
-      <li>Bewohner: {{ building.tenant }} [Per.]</li>
-      <li>Heizungstyp: {{ building.heating_type }}</li>
-      <li>Wärmeverteilung: {{ building.distribution_type }}</li>
-      <li>Wassererwärmung: {{ building.hotwater_type }}</li>
-      <li>Kommentar: {{ building.comment }}</li>
-      <li>++++++++++++++++++++++++++++++++++++++++++</li>
+        <div class="col">
+            {#  Werte des erfassten Gebäude werden in eine "List Group" geschrieben  #}
+            <ul class="list-group">
+                    <li class="list-group-item">Gebäude-ID: <b> {{ building.id }} </b></li>
+                    <li class="list-group-item">Strasse: <b> {{ building.street_number}}</b></li>
+                    <li class="list-group-item">Ort:<b> {{ building.city }}</b></li>
+                    <li class="list-group-item">Haustyp: <b> {{ building.building_type }}</b></li>
+                    <li class="list-group-item">Energiebezugsfläche: <b> {{ building.ebf }} </b> [m2]</li>
+                    <li class="list-group-item">Bewohner: <b> {{ building.tenant }} </b> [Per.]</li>
+                    <li class="list-group-item">Heizungstyp: <b> {{ building.heating_type }}</b></li>
+                    <li class="list-group-item">Wärmeverteilung: <b> {{ building.distribution_type }}</b></li>
+                    <li class="list-group-item">Wassererwärmung: <b> {{ building.hotwater_type }}</b></li>
+                    <li class="list-group-item">Kommentar: <b> {{ building.comment }}</b></li>
+            </ul>
+                <br>
+        </div>
     {% endfor %}
-  </ul>
+    </div>
 {% endblock %}

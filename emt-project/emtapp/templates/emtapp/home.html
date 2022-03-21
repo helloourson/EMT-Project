@@ -1,19 +1,22 @@
 <!-- Parent Template erweitern -->
 {% extends 'emtapp/base.html' %}
+{% load static %}
 
 <!-- Teil wird in content eingefügt -->
 {% block content %}
-
-  <h1 class="mt-2">Willkommen bei der EBL-Energieberatung</h1>
+<div class="container text-center">
+  <h1 class="mt-2">Energie Monitoring Tool</h1>
   <hr class="mt-0 mb-4">
-  <br>
-  <h2>Energie Monitoring Tool EMT</h2>
-  <br>
-  <img src="https://via.placeholder.com/450x250" alt="">
+{#  <br>#}
+{#  <h2>Energie Monitoring Tool</h2>#}
+{#  <br>#}
+  <img src="{% static 'emtapp/EMT_Logo_400_400.png' %}" class="img-fluid width: 210% height: 300%" alt="">
+{#  <img src="https://via.placeholder.com/450x250" class="img-fluid" alt="">#}
+{#  <img src="https://via.placeholder.com/200x200" class="img-fluid" alt="">#}
+{#    <br>#}
     <br>
-    <br>
-  <p>Ein einfaches Hilfsmittel zum erfassen des Energieverbauchs in Wohn- und Gewerbebauten</p>
+  <h4>Ein einfaches Hilfsmittel zum erfassen des Energieverbauchs in Wohn- und Gewerbebauten</h4>
   <br>
-  <p>Mit uns behalten Sie den Überblick</p>
-
+  <h3>Mit uns behalten Sie den Überblick</h3>
+</div>
 {% endblock %}

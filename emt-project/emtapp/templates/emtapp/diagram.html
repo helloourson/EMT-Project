@@ -2,10 +2,12 @@
 {% extends 'emtapp/base.html' %}
 
 <!-- Title einfügen -->
-{% block title %} diagram.html {{ value_list.0 }} Diagramm {% endblock title %}
+{% block title %} diagram.html {{ value_list.0 }} {% endblock title %}
 
 <!-- Teil wird in content eingefügt -->
 {% block content %}
+    <h2 class="mt-2 text-center">Verbrauch: {{ value_list.0 }}</h2>
+    <hr class="mt-0 mb-4">
 
   	<!-- <link rel="stylesheet" href="template.css" />
   	<script src="template.js"></script> -->
@@ -20,8 +22,9 @@
     <!-- bootstrap -->
     <!-- <script rel="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"></script> -->
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  </head>
+{#  Bootstrap Bibliothek wird schon in base.html geladen  #}
+{#    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">#}
+
   <script>
   <!-- jQuery Jedes mal wenn Dokument geladen wird soll Funktion ausgeführt werden -->
   $(document).ready(function(){
@@ -83,29 +86,35 @@
   });
   </script>
 
-  <body>
-    <!-- Button um zu Ableseliste zu wechseln -->
-  <form class="" action="{% url 'readout_list' value_list.0.counter_id %}" method="POST">
-      {% csrf_token %}
-      <button type="submit" name="button">Energieverbrauch als Liste anzeigen</button>
-  </form>
-    <div class="container">
-      <div class="row">
-        <div class="col-sm">
-          <ul>
-            <p>Gebäude: {{ building.street_number }} EBF: {{ building.ebf }} [m2]</p>
-            <p>Energieverbrauch {{ consumption }} [kWh] in {{ period }} Tagen</p>
-            <p>Spezifischer Energieverbrauch {{ specific_consumption | floatformat:0 }} [kWh/m2]</p>
-            <p>Prognose Jahres-Energieverbrauch {{ consumption_heating_period | floatformat:0 }} [kWh] (8Monate)</p>
-          </ul>
-          <!-- <h3> Zähler: {{ values.0 }}</h3> -->
-        </div>
-        <div class="col-sm">
-          <canvas id="myChart" width="200" height="200" ></canvas>
-        </div>
-      </div>
-    </div>
+{#  <body>#}
 
+<div class="container">
+    <div class="row justify-content-center">
+                <canvas id="myChart"  ></canvas>
+{#                <canvas id="myChart" width="200" height="200" ></canvas>#}
+    </div>
+    <div class="row justify-content-center">
+        <!-- Info-Übersicht -->
+            <div class="col" >
+                <ul class="list-group list-group-horizontal-md">
+                    <li class="list-group-item flex-fill">Gebäude mit EBF {{ building.ebf }} [m2]</li>
+                    <li class="list-group-item flex-fill">Energieverbrauch {{ consumption }} [kWh] in {{ period }} Tagen</li>
+                </ul>
+                <ul class="list-group list-group-horizontal-md">
+                    <li class="list-group-item flex-fill">Spezifischer Energieverbrauch {{ specific_consumption | floatformat:0 }} [kWh/m2]</li>
+                    <li class="list-group-item flex-fill">Prognose Jahres-Energieverbrauch {{ consumption_heating_period | floatformat:0 }} [kWh] (8Monate)</li>
+                </ul>
+                <ul class="list-group">
+                    <!-- Button um zu Ableseliste zu wechseln -->
+                    <form action="{% url 'readout_list' value_list.0.counter_id %}" method="POST">
+                        {% csrf_token %}
+                        <br>
+                        <button class="btn btn-secondary btn-sm btn-block" type="submit" name="button">Energieverbrauch als Liste anzeigen</button>
+                    </form>
+                </ul>
+            </div>
+    </div>
+</div>
 
 
 

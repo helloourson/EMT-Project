@@ -13,8 +13,8 @@ class Building(models.Model):
         ]
     building_type = models.CharField('Gebäudeart', max_length=50, choices=BUILDING_TYPE_CHOICES, default='EFH')
     year_construction = models.DateField('Baujahr')
-    ebf = models.IntegerField('Energiebezugsfläche [m2]')
-    tenant = models.IntegerField('Anzahl Bewohner')
+    ebf = models.PositiveIntegerField('Energiebezugsfläche [m2]')
+    tenant = models.PositiveIntegerField('Anzahl Bewohner')
     HEATING_TYPE_CHOICES = [
         ('OHK', 'Ölheizkessel'),
         ('EHK', 'Erdgasheizkessel'),
@@ -37,7 +37,7 @@ class Building(models.Model):
         ('SK', 'Solarkollektoren'),
         ]
     hotwater_type = models.CharField('Wassererwärmung', max_length=50, choices= HOTWATER_TYPE_CHOICES, default='HG')
-    comment = models.TextField('Kommentar [-]', max_length=200, default='-')
+    comment = models.TextField('Kommentar', max_length=200, default='-')
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # Damit zum jeweiligen Gebäude der User hinzugefügt werden kann
 
     def __str__(self):

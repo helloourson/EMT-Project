@@ -6,14 +6,26 @@
 
 <!-- Teil wird in content eingefügt -->
 {% block content %}
-
-    <h1>Einloggen</h1>
+    <h2 class="mt-2 text-center">Einloggen</h2>
+    <!-- Horizontalen Strich einfügen -->
+    <hr class="mt-0 mb-4">
     <h2>{{ error }}</h2>
     <form action="" method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-    <button typ="submit" >Einloggen</button>
+    {#        {{ form.as_p }}#}
+        <div class="form-group">
+            <label for="text">Benutzername</label>
+            <input type="text" class="form-control" name="username">
+    {#        {{ form.username.label_tag }}#}
+    {#        {{ form.username }}#}
+{#            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>#}
+            <p>Noch nicht registriert? Hier <a href="{% url 'signup_user' %}">klicken</a></p>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" name="password">
+        </div>
+        <button type="submit" class="btn btn-secondary">Einloggen</button>
     </form>
-
 
 {% endblock %}

@@ -1,7 +1,7 @@
 <!-- Parent Template Inhalt wird von jeder Seite genutzt -->
 <!doctype html>
 <html lang="en">
-
+{% load static %}
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -9,19 +9,28 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
      <!-- Schrift importieren -->
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
-
     <!-- Style im html eingebetet, separates CSS-File in Ordner static erstellen -->
+    {# jQuery importieren #}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
     <style>
-        {# Das ergibt einen Sticky-Footer  #}
+         {#Das ergibt einen Sticky-Footer  #}
         .footer {
             position: fixed;
-            height: 50px;
+            height: 25px;
             bottom: 0px;
             width: 100%;
-            background-color: #f5f5f5;
+            background-color: black;
+            color: white;} <!-- Schrift weiss -->
+
+        .navbar-custom .navbar-brand,
+        .navbar-custom .navbar-text {
+        color: green;
         }
+
     </style>
-      <title>
+        <title>
         {% block title %}
           {{ base_titel | default:"Energie-Monitoring-Tool" }}
         {% endblock title %}
@@ -48,10 +57,10 @@
 {#          <a href="{% url 'login_user' %}">Einloggen</a>#}
 {#      {%  endif %}#}
 {#      <p>*********************</p>#}
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'home' %}">
+{#            <img src="{% static 'emtapp/EMT_Logo_Ohne_Text.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">#}
+            Home</a>
         {# Toogler Button "Hamburger" #}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -75,14 +84,20 @@
               </li>
             </ul>
 
-            {#  Wie bringt man diesen Teil der Navbar nach rechts?      #}
+            {#  Rechter Teil der Navbar  #}
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
-                    <spam class="navbar-text"> <b> {{ user.username }} </b> </spam>
-                    <form action="{% url 'logout_user' %}" method="POST">
-                        {% csrf_token %}
-                        <button class="btn btn-sm btn-outline-info" type="submit">Ausloggen</button>
-                    </form>
+                    <li class="nav-item">
+                        <spam class="navbar-text">Eingeloggt als:&nbsp <b><i>{{ user.username }}</i></b></spam>
+                    </li>
+                    {# Ausloggen-Knopf nicht als Button darstellen, sonder als Link #}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="$('#signOutBtn').click()">Ausloggen</a>
+                        <form style="display: none;" action="{% url 'logout_user' %}" method="POST">
+                            {% csrf_token %}
+                            <button id="signOutBtn" type="submit">Ausloggen</button>
+                        </form>
+                    </li>
                 {%  else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'signup_user' %}">Registrieren</a>
@@ -93,25 +108,23 @@
                 {%  endif %}
             </ul>
         </div>
-      </div>
     </nav>
-    <div class="container text-center">
-        {% block content %}
-        {# Hier wird der jeweilige Inhlat eingefügt #}
-        {% endblock %}
+
+    <div class="container-fluid">
+{#        <div class="container text-center">#}
+            {% block content %}
+            {# Hier wird der jeweilige Inhalt eingefügt #}
+            {% endblock %}
+{#        </div>#}
     </div>
-  {# jQuery importieren #}
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
-
   </body>
-
-  <footer class="footer">
+{#    Umbrüche einfügen zwei Zeilen vor dem Sticky-Footer eingefügt werden  #}
+    <br>
+    <br>
+    <footer class="footer ">
     <div class="container text-center">
-{#        <p>***********************</p>#}
         <p>&copy; Urs Gerhard | Energie-Monitoring-Tool | 2022</p>
     </div>
-  </footer>
+    </footer>
 
 </html>

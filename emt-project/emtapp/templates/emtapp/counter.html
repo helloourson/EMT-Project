@@ -10,12 +10,13 @@
 <hr class="mt-0 mb-4">
 
 {% if submitted %}
-    <p class="success">
+    <div class="justify-content-center mt-5 alert alert-success" role="alert">
       Der Zähler ist in der DB erfolgreich erfasst worden.
-    </p>
-  {% else %}
+    </div>
+{% else %}
     <form action="" method="POST" novalidate>
-    <table class="table  table-responsive table-bordered table-hover">
+{#    <table class="table  table-responsive table-bordered table-hover">#}
+    <table>
       {{ form.as_table }}
       <tr>
         <td>&nbsp;</td>
@@ -27,4 +28,4 @@
 
 {% endif %}
 
-{% endblock %}
+{% endblock content %}

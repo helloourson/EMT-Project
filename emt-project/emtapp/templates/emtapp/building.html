@@ -5,14 +5,14 @@
 {% block title %} building.html Add Building {% endblock title %}
 
 {% block content %}
-<h2 class="mt-2">Neues Gebäude erfassen und in Datenbank schreiben</h2>
-<!-- Horizontalen Strich einfügen -->
-<hr class="mt-0 mb-4">
-
+    <h2 class="mt-2 text-center">Neues Gebäude erfassen</h2>
+    <!-- Horizontalen Strich einfügen -->
+    <hr class="mt-0 mb-4">
 {% if submitted %}
-  <p class="success">
-    Das Gebäude ist in der DB erfolgreich erfasst worden.
-  </p>
+    <div class="justify-content-center mt-5 alert alert-success" role="alert">
+      Das Gebäude ist in der DB erfolgreich erfasst worden.
+    </div>
+
 {% else %}
 {#  <form action="" method="POST" novalidate>#}
 {#  <table class="table  table-responsive table-bordered table-hover">#}
@@ -25,12 +25,79 @@
 {#  </table>#}
 {#  {% csrf_token %}#}
 {#  </form>#}
-  <form action="" method="POST" novalidate>
-    <div class="container">
-    {{ form.as_p }}
+
+    {#  2.Versuch für Styling  #}
+{#<div class="form-group col-lg-12">#}
+{#    <form action="" method="POST" novalidate>#}
+{#    {{ form.as_p }}#}
+{#    {% csrf_token %}#}
+{#    <button type="submit" class="btn btn-secondary">Speichern</button>#}
+{#    </form>#}
+{#</div>#}
+
+    {#  3.Versuch für Styling  #}
+<form action="" method="POST" novalidate>
     {% csrf_token %}
-    <button type="submit" >Speichern</button>
+    <div class="form-row">
+        <div class="form-group col-xl-6">
+            {{ form.street_number.errors }} {# Damit Fehlermeldung eingeblendet wird #}
+            {{ form.street_number.label_tag }} {# Titel einblenden #}
+            {{ form.street_number }} {# Wert aus der Datenbank #}
+        </div>
+        <div class="form-group col-xl-6">
+            {{ form.city.errors }}
+            {{ form.city.label_tag }}
+            {{ form.city }}
+        </div>
     </div>
-  </form>
+    <div class="form-row">
+        <div class="form-group col-xl-3">
+            {{ form.building_type.errors }}
+            {{ form.building_type.label_tag }}
+            {{ form.building_type }}
+        </div>
+        <div class="form-group col-xl-3">
+            {{ form.year_construction.errors }}
+            {{ form.year_construction.label_tag }}
+            {{ form.year_construction }}
+        </div>
+        <div class="form-group col-xl-3">
+            {{ form.ebf.errors }}
+            {{ form.ebf.label_tag }}
+            {{ form.ebf }}
+        </div>
+        <div class="form-group col-xl-3">
+            {{ form.tenant.errors }}
+            {{ form.tenant.label_tag }}
+            {{ form.tenant }}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-xl-4">
+            {{ form.heating_type.errors }}
+            {{ form.heating_type.label_tag }}
+            {{ form.heating_type }}
+        </div>
+        <div class="form-group col-xl-4">
+            {{ form.distribution_type.errors }}
+            {{ form.distribution_type.label_tag }}
+            {{ form.distribution_type }}
+        </div>
+        <div class="form-group col-xl-4">
+            {{ form.hotwater_type.errors }}
+            {{ form.hotwater_type.label_tag }}
+            {{ form.hotwater_type }}
+        </div>
+    </div>
+    <div class="form-row">
+            {{ form.comment.errors }}
+            {{ form.comment.label_tag }}
+            {{ form.comment }}
+    </div>
+    <br>
+    <button type="submit" class="btn btn-secondary">Speichern</button>
+</form>
+
 {% endif %}
+
 {% endblock content %}
